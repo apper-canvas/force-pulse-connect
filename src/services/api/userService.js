@@ -1,3 +1,7 @@
+/**
+ * UserService - Phase 1 Implementation
+ * Core functionality focused on authentication and profile retrieval
+ */
 class UserService {
   constructor() {
     // Initialize ApperClient
@@ -8,254 +12,10 @@ class UserService {
     });
   }
 
-async getAll() {
-    try {
-      const params = {
-        fields: [
-          { field: { Name: "Name" } },
-          { field: { Name: "username" } },
-          { field: { Name: "display_name" } },
-          { field: { Name: "bio" } },
-          { field: { Name: "avatar" } },
-          { field: { Name: "is_private" } },
-          { field: { Name: "followers_count" } },
-          { field: { Name: "following_count" } },
-          { field: { Name: "posts_count" } }
-        ],
-        pagingInfo: {
-          limit: 100,
-          offset: 0
-        }
-      };
-
-      const response = await this.apperClient.fetchRecords('app_User', params);
-
-      if (!response.success) {
-        console.error(response.message);
-        return [];
-      }
-
-      return response.data || [];
-    } catch (error) {
-      if (error?.response?.data?.message) {
-        console.error("Error fetching users:", error?.response?.data?.message);
-      } else {
-        console.error(error.message);
-      }
-      return [];
-    }
-  }
-
-  async getById(id) {
-    try {
-      const params = {
-        fields: [
-          { field: { Name: "Name" } },
-          { field: { Name: "username" } },
-          { field: { Name: "display_name" } },
-          { field: { Name: "bio" } },
-          { field: { Name: "avatar" } },
-          { field: { Name: "is_private" } },
-          { field: { Name: "followers_count" } },
-          { field: { Name: "following_count" } },
-          { field: { Name: "posts_count" } }
-        ]
-      };
-
-      const response = await this.apperClient.getRecordById('app_User', id, params);
-
-      if (!response.success) {
-        console.error(response.message);
-        return null;
-      }
-
-      return response.data || null;
-    } catch (error) {
-      if (error?.response?.data?.message) {
-        console.error(`Error fetching user with ID ${id}:`, error?.response?.data?.message);
-      } else {
-        console.error(error.message);
-      }
-      return null;
-    }
-  }
-
-  async searchUsers(query) {
-    try {
-      if (!query.trim()) return [];
-
-      const params = {
-        fields: [
-          { field: { Name: "Name" } },
-          { field: { Name: "username" } },
-          { field: { Name: "display_name" } },
-          { field: { Name: "bio" } },
-          { field: { Name: "avatar" } },
-          { field: { Name: "is_private" } },
-          { field: { Name: "followers_count" } },
-          { field: { Name: "following_count" } },
-          { field: { Name: "posts_count" } }
-        ],
-        whereGroups: [{
-          operator: "OR",
-          subGroups: [
-            {
-              conditions: [{
-                fieldName: "username",
-                operator: "Contains",
-                values: [query]
-              }],
-              operator: "OR"
-            },
-            {
-              conditions: [{
-                fieldName: "display_name",
-                operator: "Contains",
-                values: [query]
-              }],
-              operator: "OR"
-            }
-          ]
-        }],
-        pagingInfo: {
-          limit: 20,
-          offset: 0
-        }
-      };
-
-      const response = await this.apperClient.fetchRecords('app_User', params);
-
-      if (!response.success) {
-        console.error(response.message);
-        return [];
-      }
-
-      return response.data || [];
-    } catch (error) {
-      if (error?.response?.data?.message) {
-        console.error("Error searching users:", error?.response?.data?.message);
-      } else {
-        console.error(error.message);
-      }
-      return [];
-    }
-  }
-
-  async updateProfile(id, updates) {
-    try {
-      // Only include updateable fields
-      const updateableFields = {
-        username: updates.username,
-        display_name: updates.display_name || updates.displayName,
-        bio: updates.bio,
-        avatar: updates.avatar,
-        is_private: updates.is_private || updates.isPrivate,
-        followers_count: updates.followers_count || updates.followersCount,
-        following_count: updates.following_count || updates.followingCount,
-        posts_count: updates.posts_count || updates.postsCount
-      };
-
-      // Remove undefined fields
-      Object.keys(updateableFields).forEach(key => {
-        if (updateableFields[key] === undefined) {
-          delete updateableFields[key];
-        }
-      });
-
-      const params = {
-        records: [{
-          Id: id,
-          ...updateableFields
-        }]
-      };
-
-      const response = await this.apperClient.updateRecord('app_User', params);
-
-      if (!response.success) {
-        console.error(response.message);
-        return null;
-      }
-
-      const successfulUpdates = response.results.filter(result => result.success);
-      const failedUpdates = response.results.filter(result => !result.success);
-
-      if (failedUpdates.length > 0) {
-        console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
-      }
-
-      return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
-    } catch (error) {
-      if (error?.response?.data?.message) {
-        console.error("Error updating profile:", error?.response?.data?.message);
-      } else {
-        console.error(error.message);
-      }
-      return null;
-    }
-  }
-
-async followUser(userId, targetUserId) {
-    try {
-      // In a real implementation, this would create a follow relationship
-      // For now, just return success
-      return { success: true };
-    } catch (error) {
-      console.error("Error following user:", error.message);
-      return { success: false };
-    }
-  }
-
-async unfollowUser(userId, targetUserId) {
-    try {
-      // In a real implementation, this would remove a follow relationship
-      // For now, just return success
-      return { success: true };
-    } catch (error) {
-      console.error("Error unfollowing user:", error.message);
-      return { success: false };
-    }
-  }
-
-  async getSuggestedUsers(userId, limit = 5) {
-    try {
-      const params = {
-        fields: [
-          { field: { Name: "Name" } },
-          { field: { Name: "username" } },
-          { field: { Name: "display_name" } },
-          { field: { Name: "bio" } },
-          { field: { Name: "avatar" } },
-          { field: { Name: "is_private" } },
-          { field: { Name: "followers_count" } },
-          { field: { Name: "following_count" } },
-          { field: { Name: "posts_count" } }
-        ],
-        pagingInfo: {
-          limit: limit,
-          offset: 0
-        }
-      };
-
-      const response = await this.apperClient.fetchRecords('app_User', params);
-
-      if (!response.success) {
-        console.error(response.message);
-        return [];
-      }
-
-      // Filter out current user and return suggested users
-      const users = (response.data || []).filter(user => user.Id !== userId);
-      return users.slice(0, limit);
-    } catch (error) {
-      if (error?.response?.data?.message) {
-        console.error("Error fetching suggested users:", error?.response?.data?.message);
-      } else {
-        console.error(error.message);
-      }
-      return [];
-    }
-  }
-
+  /**
+   * Get current authenticated user profile
+   * Primary method for authentication and profile retrieval
+   */
   async getCurrentUser() {
     try {
       const params = {
@@ -279,25 +39,175 @@ async unfollowUser(userId, targetUserId) {
       const response = await this.apperClient.fetchRecords('app_User', params);
 
       if (!response.success) {
-        console.error(response.message);
+        console.error("Error fetching current user:", response.message);
         return null;
       }
 
-      // Return first user as current user for demo
-      return response.data && response.data.length > 0 ? response.data[0] : null;
+      // Transform database field names to UI-friendly format
+      const user = response.data && response.data.length > 0 ? response.data[0] : null;
+      if (user) {
+        return {
+          ...user,
+          displayName: user.display_name,
+          isPrivate: user.is_private,
+          followersCount: user.followers_count || 0,
+          followingCount: user.following_count || 0,
+          postsCount: user.posts_count || 0
+        };
+      }
+
+      return null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error fetching current user:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error("Error fetching current user:", error.message);
       }
       return null;
     }
   }
 
-  async getMutualFollowers(userId) {
+  /**
+   * Get user by ID
+   * Core method for profile retrieval
+   */
+  async getById(id) {
     try {
-      // For demo purposes, return a subset of users as mutual followers
+      if (!id) {
+        console.error("User ID is required");
+        return null;
+      }
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "username" } },
+          { field: { Name: "display_name" } },
+          { field: { Name: "bio" } },
+          { field: { Name: "avatar" } },
+          { field: { Name: "is_private" } },
+          { field: { Name: "followers_count" } },
+          { field: { Name: "following_count" } },
+          { field: { Name: "posts_count" } }
+        ]
+      };
+
+      const response = await this.apperClient.getRecordById('app_User', id, params);
+
+      if (!response.success) {
+        console.error(`Error fetching user ${id}:`, response.message);
+        return null;
+      }
+
+      // Transform database field names to UI-friendly format
+      const user = response.data;
+      if (user) {
+        return {
+          ...user,
+          displayName: user.display_name,
+          isPrivate: user.is_private,
+          followersCount: user.followers_count || 0,
+          followingCount: user.following_count || 0,
+          postsCount: user.posts_count || 0
+        };
+      }
+
+      return null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching user with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(`Error fetching user with ID ${id}:`, error.message);
+      }
+      return null;
+    }
+  }
+
+  /**
+   * Update user profile
+   * Core method for profile management
+   */
+  async updateProfile(id, updates) {
+    try {
+      if (!id) {
+        console.error("User ID is required for profile update");
+        return null;
+      }
+
+      // Map UI-friendly field names to database field names
+      const updateableFields = {};
+      
+      if (updates.username !== undefined) updateableFields.username = updates.username;
+      if (updates.display_name !== undefined) updateableFields.display_name = updates.display_name;
+      if (updates.displayName !== undefined) updateableFields.display_name = updates.displayName;
+      if (updates.bio !== undefined) updateableFields.bio = updates.bio;
+      if (updates.avatar !== undefined) updateableFields.avatar = updates.avatar;
+      if (updates.is_private !== undefined) updateableFields.is_private = updates.is_private;
+      if (updates.isPrivate !== undefined) updateableFields.is_private = updates.isPrivate;
+      if (updates.followers_count !== undefined) updateableFields.followers_count = updates.followers_count;
+      if (updates.followersCount !== undefined) updateableFields.followers_count = updates.followersCount;
+      if (updates.following_count !== undefined) updateableFields.following_count = updates.following_count;
+      if (updates.followingCount !== undefined) updateableFields.following_count = updates.followingCount;
+      if (updates.posts_count !== undefined) updateableFields.posts_count = updates.posts_count;
+      if (updates.postsCount !== undefined) updateableFields.posts_count = updates.postsCount;
+
+      // Validate that we have at least one field to update
+      if (Object.keys(updateableFields).length === 0) {
+        console.error("No valid fields provided for update");
+        return null;
+      }
+
+      const params = {
+        records: [{
+          Id: id,
+          ...updateableFields
+        }]
+      };
+
+      const response = await this.apperClient.updateRecord('app_User', params);
+
+      if (!response.success) {
+        console.error("Error updating profile:", response.message);
+        return null;
+      }
+
+      const successfulUpdates = response.results?.filter(result => result.success) || [];
+      const failedUpdates = response.results?.filter(result => !result.success) || [];
+
+      if (failedUpdates.length > 0) {
+        console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+      }
+
+      // Transform response back to UI-friendly format
+      if (successfulUpdates.length > 0) {
+        const updatedUser = successfulUpdates[0].data;
+        return {
+          ...updatedUser,
+          displayName: updatedUser.display_name,
+          isPrivate: updatedUser.is_private,
+          followersCount: updatedUser.followers_count || 0,
+          followingCount: updatedUser.following_count || 0,
+          postsCount: updatedUser.posts_count || 0
+        };
+      }
+
+      return null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating profile:", error?.response?.data?.message);
+      } else {
+        console.error("Error updating profile:", error.message);
+      }
+      return null;
+    }
+  }
+
+  /**
+   * Get all users with basic pagination
+   * Supporting method for user discovery
+   */
+  async getAll(limit = 50, offset = 0) {
+    try {
       const params = {
         fields: [
           { field: { Name: "Name" } },
@@ -311,7 +221,82 @@ async unfollowUser(userId, targetUserId) {
           { field: { Name: "posts_count" } }
         ],
         pagingInfo: {
-          limit: 10,
+          limit: Math.min(limit, 100), // Cap at 100 for performance
+          offset: Math.max(offset, 0)
+        }
+      };
+
+      const response = await this.apperClient.fetchRecords('app_User', params);
+
+      if (!response.success) {
+        console.error("Error fetching users:", response.message);
+        return [];
+      }
+
+      // Transform all users to UI-friendly format
+      return (response.data || []).map(user => ({
+        ...user,
+        displayName: user.display_name,
+        isPrivate: user.is_private,
+        followersCount: user.followers_count || 0,
+        followingCount: user.following_count || 0,
+        postsCount: user.posts_count || 0
+      }));
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching users:", error?.response?.data?.message);
+      } else {
+        console.error("Error fetching users:", error.message);
+      }
+      return [];
+    }
+  }
+
+  /**
+   * Search users by username or display name
+   * Basic search functionality for Phase 1
+   */
+  async searchUsers(query, limit = 20) {
+    try {
+      if (!query || !query.trim()) {
+        return [];
+      }
+
+      const searchTerm = query.trim();
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "username" } },
+          { field: { Name: "display_name" } },
+          { field: { Name: "bio" } },
+          { field: { Name: "avatar" } },
+          { field: { Name: "is_private" } }
+        ],
+        whereGroups: [{
+          operator: "OR",
+          subGroups: [
+            {
+              conditions: [{
+                fieldName: "username",
+                operator: "Contains",
+                values: [searchTerm],
+                include: true
+              }],
+              operator: "OR"
+            },
+            {
+              conditions: [{
+                fieldName: "display_name",
+                operator: "Contains",
+                values: [searchTerm],
+                include: true
+              }],
+              operator: "OR"
+            }
+          ]
+        }],
+        pagingInfo: {
+          limit: Math.min(limit, 50),
           offset: 0
         }
       };
@@ -319,119 +304,98 @@ async unfollowUser(userId, targetUserId) {
       const response = await this.apperClient.fetchRecords('app_User', params);
 
       if (!response.success) {
-        console.error(response.message);
+        console.error("Error searching users:", response.message);
         return [];
       }
 
-      // Filter out current user and return first few as mutual followers
-      const users = (response.data || []).filter(user => user.Id !== userId);
-      return users.slice(0, 4);
+      // Transform search results to UI-friendly format
+      return (response.data || []).map(user => ({
+        ...user,
+        displayName: user.display_name,
+        isPrivate: user.is_private,
+        followersCount: user.followers_count || 0,
+        followingCount: user.following_count || 0,
+        postsCount: user.posts_count || 0
+      }));
     } catch (error) {
       if (error?.response?.data?.message) {
-        console.error("Error fetching mutual followers:", error?.response?.data?.message);
+        console.error("Error searching users:", error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error("Error searching users:", error.message);
       }
       return [];
     }
   }
 
-  async getUserOnlineStatus(userId) {
-    // Simulate online status - randomly return true/false
-    return Math.random() > 0.3;
+  // ============================================================================
+  // PLACEHOLDER METHODS FOR FUTURE PHASES
+  // These maintain compatibility with existing UI components
+  // ============================================================================
+
+  /**
+   * Placeholder for follow functionality - Phase 2
+   */
+  async followUser(userId, targetUserId) {
+    console.log("Follow functionality will be implemented in Phase 2");
+    return { success: true, message: "Follow feature coming in Phase 2" };
   }
 
+  /**
+   * Placeholder for unfollow functionality - Phase 2
+   */
+  async unfollowUser(userId, targetUserId) {
+    console.log("Unfollow functionality will be implemented in Phase 2");
+    return { success: true, message: "Unfollow feature coming in Phase 2" };
+  }
+
+  /**
+   * Placeholder for user suggestions - Phase 2
+   */
+  async getSuggestedUsers(userId, limit = 5) {
+    console.log("User suggestions will be implemented in Phase 2");
+    return [];
+  }
+
+  /**
+   * Placeholder for friend suggestions - Phase 2
+   */
+  async getFriendSuggestions(userId, limit = 5) {
+    console.log("Friend suggestions will be implemented in Phase 2");
+    return [];
+  }
+
+  /**
+   * Placeholder for mutual followers - Phase 2
+   */
+  async getMutualFollowers(userId) {
+    console.log("Mutual followers will be implemented in Phase 2");
+    return [];
+  }
+
+  /**
+   * Placeholder for mutual friends - Phase 2
+   */
+  async getMutualFriends(userId1, userId2) {
+    console.log("Mutual friends will be implemented in Phase 2");
+    return [];
+  }
+
+  /**
+   * Placeholder for online status - Phase 2
+   */
+  async getUserOnlineStatus(userId) {
+    return false; // Default to offline for Phase 1
+  }
+
+  /**
+   * Placeholder for multiple online status - Phase 2
+   */
   async getMultipleOnlineStatus(userIds) {
-    // Return online status for multiple users
     const statuses = {};
     userIds.forEach(id => {
-      statuses[id] = Math.random() > 0.3;
+      statuses[id] = false; // Default to offline for Phase 1
     });
     return statuses;
-  }
-
-  async getFriendSuggestions(userId, limit = 5) {
-    try {
-      const params = {
-        fields: [
-          { field: { Name: "Name" } },
-          { field: { Name: "username" } },
-          { field: { Name: "display_name" } },
-          { field: { Name: "bio" } },
-          { field: { Name: "avatar" } },
-          { field: { Name: "is_private" } },
-          { field: { Name: "followers_count" } },
-          { field: { Name: "following_count" } },
-          { field: { Name: "posts_count" } }
-        ],
-        pagingInfo: {
-          limit: limit + 5, // Get more than needed to filter current user
-          offset: 0
-        }
-      };
-
-      const response = await this.apperClient.fetchRecords('app_User', params);
-
-      if (!response.success) {
-        console.error(response.message);
-        return [];
-      }
-
-      // Filter out current user and add suggestion metadata
-      const users = (response.data || []).filter(user => user.Id !== userId);
-      
-      const suggestions = users.map(user => ({
-        ...user,
-        mutualFriends: [],
-        mutualFriendsCount: Math.floor(Math.random() * 4) + 1,
-        suggestionReason: 'Based on your interests'
-      }));
-
-      return suggestions.slice(0, limit);
-    } catch (error) {
-      if (error?.response?.data?.message) {
-        console.error("Error fetching friend suggestions:", error?.response?.data?.message);
-      } else {
-        console.error(error.message);
-      }
-      return [];
-    }
-  }
-
-  async getMutualFriends(userId1, userId2) {
-    try {
-      // For demo purposes, return a subset of users as mutual friends
-      const params = {
-        fields: [
-          { field: { Name: "Name" } },
-          { field: { Name: "username" } },
-          { field: { Name: "display_name" } },
-          { field: { Name: "avatar" } }
-        ],
-        pagingInfo: {
-          limit: 5,
-          offset: 0
-        }
-      };
-
-      const response = await this.apperClient.fetchRecords('app_User', params);
-
-      if (!response.success) {
-        console.error(response.message);
-        return [];
-      }
-
-      // Filter out the two users and return the rest as mutual friends
-      const users = (response.data || []).filter(user => user.Id !== userId1 && user.Id !== userId2);
-      return users.slice(0, Math.floor(Math.random() * 5) + 1);
-    } catch (error) {
-      if (error?.response?.data?.message) {
-        console.error("Error fetching mutual friends:", error?.response?.data?.message);
-      } else {
-        console.error(error.message);
-      }
-      return [];
-    }
   }
 }
 
