@@ -161,7 +161,7 @@ if (!response.success) {
         return null;
       }
 
-      if (response.results) {
+if (response.results) {
         const successfulRecords = response.results.filter(result => result.success);
         const failedRecords = response.results.filter(result => !result.success);
 
@@ -171,8 +171,6 @@ if (!response.success) {
 
         return successfulRecords.length > 0 ? successfulRecords[0].data : null;
       }
-
-      return null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error creating post:", error?.response?.data?.message);
@@ -211,7 +209,7 @@ if (!response.success) {
         return null;
       }
 
-      if (response.results) {
+if (response.results) {
         const successfulUpdates = response.results.filter(result => result.success);
         const failedUpdates = response.results.filter(result => !result.success);
 
@@ -221,8 +219,6 @@ if (!response.success) {
 
         return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
       }
-
-      return null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error liking post:", error?.response?.data?.message);
@@ -257,7 +253,7 @@ if (!response.success) {
         return null;
       }
 
-      if (response.results) {
+if (response.results) {
         const successfulUpdates = response.results.filter(result => result.success);
         const failedUpdates = response.results.filter(result => !result.success);
 
@@ -267,8 +263,6 @@ if (!response.success) {
 
         return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
       }
-
-      return null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error unliking post:", error?.response?.data?.message);
@@ -427,7 +421,7 @@ if (!response.success) {
         return false;
       }
 
-      if (response.results) {
+if (response.results) {
         const successfulDeletions = response.results.filter(result => result.success);
         const failedDeletions = response.results.filter(result => !result.success);
 
@@ -437,8 +431,6 @@ if (!response.success) {
 
         return successfulDeletions.length > 0;
       }
-
-      return false;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error deleting post:", error?.response?.data?.message);
