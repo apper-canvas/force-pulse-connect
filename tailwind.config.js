@@ -19,9 +19,11 @@ export default {
         'display': ['Plus Jakarta Sans', 'sans-serif'],
         'body': ['Inter', 'sans-serif'],
       },
-      animation: {
+animation: {
         'like-bounce': 'like-bounce 0.4s ease-in-out',
         'shimmer': 'shimmer 2s linear infinite',
+        'gallery-slide': 'gallery-slide 0.3s ease-out',
+        'gallery-fade': 'gallery-fade 0.2s ease-in-out',
       },
       keyframes: {
         'like-bounce': {
@@ -31,7 +33,15 @@ export default {
         },
         'shimmer': {
           '0%': { backgroundPosition: '-200px 0' },
-          '100%': { backgroundPosition: 'calc(200px + 100%) 0' },
+'100%': { backgroundPosition: 'calc(200px + 100%) 0' },
+        },
+        'gallery-slide': {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0%)' },
+        },
+        'gallery-fade': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
         },
       },
     },
