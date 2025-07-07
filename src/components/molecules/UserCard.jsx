@@ -34,10 +34,18 @@ const UserCard = ({
           alt={user.displayName}
           size="md"
         />
-        <div>
+<div>
           <h3 className="font-semibold text-gray-900">{user.displayName}</h3>
           <p className="text-sm text-gray-500">@{user.username}</p>
-          {user.bio && (
+          {user.mutualFriends && user.mutualFriends.length > 0 && (
+            <p className="text-xs text-primary mt-1 flex items-center space-x-1">
+              <ApperIcon name="Users" size={12} />
+              <span>
+                {user.mutualFriends.length} mutual friend{user.mutualFriends.length !== 1 ? 's' : ''}
+              </span>
+            </p>
+          )}
+          {user.bio && !user.mutualFriends && (
             <p className="text-xs text-gray-400 mt-1 line-clamp-2">
               {user.bio}
             </p>

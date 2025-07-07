@@ -89,6 +89,53 @@ async getCurrentUser() {
       statuses[id] = Math.random() > 0.3;
     });
     return statuses;
+}
+
+  async getFriendSuggestions(userId, limit = 5) {
+    await this.delay();
+    
+    // Get all users except the current user
+    const otherUsers = this.users.filter(user => user.Id !== userId);
+    
+    // Simulate mutual friends calculation
+    const suggestions = otherUsers.map(user => {
+      // For demo purposes, create realistic mutual friends
+      const mutualFriends = this.users
+        .filter(u => u.Id !== userId && u.Id !== user.Id)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, Math.floor(Math.random() * 4) + 1); // 1-4 mutual friends
+      
+      return {
+        ...user,
+        mutualFriends: mutualFriends.map(friend => ({
+          Id: friend.Id,
+          displayName: friend.displayName,
+          username: friend.username,
+          avatar: friend.avatar
+        })),
+        mutualFriendsCount: mutualFriends.length,
+        suggestionReason: mutualFriends.length > 0 
+          ? `${mutualFriends.length} mutual friend${mutualFriends.length !== 1 ? 's' : ''}`
+          : 'Based on your interests'
+      };
+    });
+
+    // Sort by mutual friends count (descending) and return limited results
+    return suggestions
+      .sort((a, b) => b.mutualFriendsCount - a.mutualFriendsCount)
+      .slice(0, limit);
+  }
+
+  async getMutualFriends(userId1, userId2) {
+    await this.delay();
+    
+    // Simulate getting mutual friends between two users
+    const mutualFriends = this.users
+      .filter(user => user.Id !== userId1 && user.Id !== userId2)
+      .sort(() => 0.5 - Math.random())
+      .slice(0, Math.floor(Math.random() * 5) + 1);
+    
+    return mutualFriends;
   }
 }
 
