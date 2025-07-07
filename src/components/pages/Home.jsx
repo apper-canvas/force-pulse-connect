@@ -3,12 +3,12 @@ import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 import PostCard from '@/components/organisms/PostCard';
 import CreatePostModal from '@/components/organisms/CreatePostModal';
+import TrendingHashtags from '@/components/organisms/TrendingHashtags';
 import Loading from '@/components/ui/Loading';
 import Error from '@/components/ui/Error';
 import Empty from '@/components/ui/Empty';
 import postService from '@/services/api/postService';
 import userService from '@/services/api/userService';
-
 const Home = () => {
   const [posts, setPosts] = useState([]);
   const [users, setUsers] = useState([]);
@@ -167,7 +167,10 @@ useEffect(() => {
   }
 
 return (
-    <div className="max-w-2xl mx-auto p-4 pb-20 md:pb-4">
+    <div className="max-w-6xl mx-auto p-4 pb-20 md:pb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Content */}
+        <div className="lg:col-span-2">
       <div className="space-y-4">
         {posts.map((post) => {
           const user = getUserById(post.userId);
@@ -192,16 +195,25 @@ return (
               />
             </div>
           );
-        })}
+})}
+        </div>
+        
+        <CreatePostModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={handleCreatePost}
+          currentUser={currentUser}
+        />
       </div>
-
-      <CreatePostModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreatePost}
-        currentUser={currentUser}
-      />
+      
+      {/* Sidebar */}
+      <div className="lg:col-span-1">
+        <div className="sticky top-4 space-y-4">
+          <TrendingHashtags limit={8} />
+        </div>
+      </div>
     </div>
+  </div>
   );
 };
 
