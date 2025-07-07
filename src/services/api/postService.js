@@ -438,12 +438,11 @@ class PostService {
               console.error(record.message);
             }
           });
-        }
+}
 
         return successfulDeletions.length > 0;
       }
       
-      // Response was successful but no results array - assume success
       return true;
     } catch (error) {
       this.handleError(`Error deleting post ${id}`, error);
