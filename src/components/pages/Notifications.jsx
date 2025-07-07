@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import NotificationItem from '@/components/molecules/NotificationItem';
+import NotificationDetailModal from '@/components/organisms/NotificationDetailModal';
 import Button from '@/components/atoms/Button';
 import Loading from '@/components/ui/Loading';
 import Error from '@/components/ui/Error';
@@ -8,14 +9,14 @@ import Empty from '@/components/ui/Empty';
 import ApperIcon from '@/components/ApperIcon';
 import notificationService from '@/services/api/notificationService';
 import userService from '@/services/api/userService';
-
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [markingAllAsRead, setMarkingAllAsRead] = useState(false);
-
+  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -67,6 +68,16 @@ const Notifications = () => {
     } finally {
       setMarkingAllAsRead(false);
     }
+};
+
+  const handleOpenDetail = (notification) => {
+    setSelectedNotification(notification);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedNotification(null);
+    setIsDetailModalOpen(false);
   };
 
   const getUserById = (userId) => {
@@ -143,17 +154,18 @@ const Notifications = () => {
       {/* Notifications List */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="divide-y divide-gray-100">
-          {notifications.map((notification) => {
-            const user = getUserById(notification.fromUserId);
-            return (
-              <NotificationItem
-                key={notification.Id}
-                notification={notification}
-                user={user}
-                onMarkAsRead={handleMarkAsRead}
-              />
-            );
-          })}
+{notifications.map((notification) => {
+          const user = getUserById(notification.fromUserId);
+          return (
+            <NotificationItem
+              key={notification.Id}
+              notification={notification}
+              user={user}
+              onMarkAsRead={handleMarkAsRead}
+              onOpenDetail={handleOpenDetail}
+            />
+          );
+        })}
         </div>
       </div>
 
@@ -167,7 +179,16 @@ const Notifications = () => {
           <ApperIcon name="RefreshCw" size={16} className="mr-2" />
           Refresh Notifications
         </Button>
-      </div>
+</div>
+
+      {/* Notification Detail Modal */}
+      <NotificationDetailModal
+        notification={selectedNotification}
+        user={selectedNotification ? getUserById(selectedNotification.fromUserId) : null}
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseDetail}
+        onMarkAsRead={handleMarkAsRead}
+      />
     </div>
   );
 };

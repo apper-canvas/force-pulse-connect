@@ -9,6 +9,7 @@ const NotificationItem = ({
   notification, 
   user, 
   onMarkAsRead,
+  onOpenDetail,
   className 
 }) => {
   const getNotificationIcon = (type) => {
@@ -37,7 +38,11 @@ const NotificationItem = ({
     }
   };
 
-  const handleClick = () => {
+const handleClick = () => {
+    // Open detail modal first
+    onOpenDetail?.(notification);
+    
+    // Then mark as read if unread
     if (!notification.isRead) {
       onMarkAsRead?.(notification.Id);
     }
