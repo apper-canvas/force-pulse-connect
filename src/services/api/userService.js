@@ -156,12 +156,11 @@ class UserService {
       };
 
       // Remove undefined fields
-      Object.keys(updateableFields).forEach(key => {
+Object.keys(updateableFields).forEach(key => {
         if (updateableFields[key] === undefined) {
           delete updateableFields[key];
         }
       });
-};
 
       const params = {
         records: [{
@@ -190,8 +189,9 @@ class UserService {
         console.error("Error updating profile:", error?.response?.data?.message);
       } else {
         console.error(error.message);
-      }
+}
       return null;
+    }
   }
 
   async followUser(userId, targetUserId) {

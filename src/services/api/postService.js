@@ -140,7 +140,7 @@ class PostService {
     }
   }
 
-  async create(postData) {
+async create(postData) {
     try {
       const params = {
         records: [{
@@ -154,26 +154,21 @@ class PostService {
         }]
       };
 
-try {
-        const response = await this.apperClient.createRecord('post', params);
+      const response = await this.apperClient.createRecord('post', params);
 
-        if (!response.success) {
-          console.error(response.message);
-          return null;
-        }
-
-        const successfulRecords = response.results.filter(result => result.success);
-        const failedRecords = response.results.filter(result => !result.success);
-
-        if (failedRecords.length > 0) {
-          console.error(`Failed to create ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
-        }
-
-        return successfulRecords.length > 0 ? successfulRecords[0].data : null;
-      } catch (error) {
-        console.error('Error creating post:', error.message);
+      if (!response.success) {
+        console.error(response.message);
         return null;
       }
+
+      const successfulRecords = response.results.filter(result => result.success);
+      const failedRecords = response.results.filter(result => !result.success);
+
+      if (failedRecords.length > 0) {
+        console.error(`Failed to create ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+      }
+
+      return successfulRecords.length > 0 ? successfulRecords[0].data : null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error creating post:", error?.response?.data?.message);
@@ -185,7 +180,7 @@ try {
   }
 
   async likePost(postId, userId) {
-    try {
+try {
       // First get the current post to check existing likes
       const post = await this.getById(postId);
       if (!post) return null;
@@ -205,26 +200,21 @@ try {
         }]
       };
 
-try {
-        const response = await this.apperClient.updateRecord('post', params);
+      const response = await this.apperClient.updateRecord('post', params);
 
-        if (!response.success) {
-          console.error(response.message);
-          return null;
-        }
-
-        const successfulUpdates = response.results.filter(result => result.success);
-        const failedUpdates = response.results.filter(result => !result.success);
-
-        if (failedUpdates.length > 0) {
-          console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
-        }
-
-        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
-      } catch (error) {
-        console.error('Error updating post likes:', error.message);
+      if (!response.success) {
+        console.error(response.message);
         return null;
       }
+
+      const successfulUpdates = response.results.filter(result => result.success);
+      const failedUpdates = response.results.filter(result => !result.success);
+
+      if (failedUpdates.length > 0) {
+        console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+      }
+
+      return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error liking post:", error?.response?.data?.message);
@@ -235,7 +225,7 @@ try {
     }
   }
 
-  async unlikePost(postId, userId) {
+async unlikePost(postId, userId) {
     try {
       // First get the current post to check existing likes
       const post = await this.getById(postId);
@@ -252,26 +242,21 @@ try {
         }]
       };
 
-try {
-        const response = await this.apperClient.updateRecord('post', params);
+      const response = await this.apperClient.updateRecord('post', params);
 
-        if (!response.success) {
-          console.error(response.message);
-          return null;
-        }
-
-        const successfulUpdates = response.results.filter(result => result.success);
-        const failedUpdates = response.results.filter(result => !result.success);
-
-        if (failedUpdates.length > 0) {
-          console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
-        }
-
-        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
-      } catch (error) {
-        console.error('Error removing post like:', error.message);
+      if (!response.success) {
+        console.error(response.message);
         return null;
       }
+
+      const successfulUpdates = response.results.filter(result => result.success);
+      const failedUpdates = response.results.filter(result => !result.success);
+
+      if (failedUpdates.length > 0) {
+        console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+      }
+
+      return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error unliking post:", error?.response?.data?.message);
@@ -418,35 +403,30 @@ async addComment(postId, commentData) {
   }
 
   async delete(id) {
-    try {
+try {
       const params = {
         RecordIds: [id]
       };
 
-try {
-        const response = await this.apperClient.deleteRecord('post', params);
+      const response = await this.apperClient.deleteRecord('post', params);
 
-        if (!response.success) {
-          console.error(response.message);
-          return false;
-        }
-
-        if (response.results) {
-          const successfulDeletions = response.results.filter(result => result.success);
-          const failedDeletions = response.results.filter(result => !result.success);
-
-          if (failedDeletions.length > 0) {
-            console.error(`Failed to delete ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
-          }
-
-          return successfulDeletions.length > 0;
-        }
-
-        return false;
-      } catch (error) {
-        console.error('Error deleting post:', error.message);
+      if (!response.success) {
+        console.error(response.message);
         return false;
       }
+
+      if (response.results) {
+        const successfulDeletions = response.results.filter(result => result.success);
+        const failedDeletions = response.results.filter(result => !result.success);
+
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
+        }
+
+        return successfulDeletions.length > 0;
+      }
+
+      return false;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error deleting post:", error?.response?.data?.message);
