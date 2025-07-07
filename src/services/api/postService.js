@@ -417,7 +417,7 @@ class PostService {
 
       const params = {
         RecordIds: [Number(id)]
-      };
+};
 
       const response = await this.apperClient.deleteRecord(this.tableName, params);
 
@@ -443,7 +443,8 @@ class PostService {
         return successfulDeletions.length > 0;
       }
       
-      return false;
+      // Response was successful but no results array - assume success
+      return true;
     } catch (error) {
       this.handleError(`Error deleting post ${id}`, error);
       return false;
