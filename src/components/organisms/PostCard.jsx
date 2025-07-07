@@ -67,22 +67,36 @@ return post.imageUrl || `https://picsum.photos/500/500?random=${post.Id}`
     <div className={cn('post-card p-6 mb-4', className)}>
       {/* Post Header */}
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-3">
+<div className="flex items-center space-x-3">
           <Avatar
             src={user?.avatar}
             alt={user?.displayName}
             size="md"
           />
-<div>
+          <div>
             <h3 className="font-semibold text-gray-900">{user?.displayName}</h3>
-            <p className="text-sm text-gray-500">
-              {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-            </p>
+            <div className="flex items-center gap-2">
+              <ApperIcon 
+                name="Clock" 
+                size="sm" 
+                className="text-gray-500" 
+              />
+              <span className="text-sm text-gray-500">
+                {(() => {
+                  try {
+                    if (!post?.createdAt) return "Unknown time";
+                    const date = new Date(post.createdAt);
+                    if (isNaN(date.getTime())) return "Unknown time";
+                    return formatDistanceToNow(date, { addSuffix: true });
+                  } catch (error) {
+                    console.warn('Date formatting error:', error);
+                    return "Unknown time";
+                  }
+                })()}
+              </span>
+            </div>
           </div>
         </div>
-        <Button variant="ghost" size="sm">
-          <ApperIcon name="MoreHorizontal" className="w-4 h-4" />
-        </Button>
       </div>
 
       {/* Post Content */}
