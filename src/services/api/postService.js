@@ -434,11 +434,11 @@ class PostService {
           console.error(`Failed to delete ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
           
           failedDeletions.forEach(record => {
-            if (record.message) {
+if (record.message) {
               console.error(record.message);
             }
           });
-}
+        }
 
         return successfulDeletions.length > 0;
       }
