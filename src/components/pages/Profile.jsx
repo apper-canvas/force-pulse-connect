@@ -50,7 +50,7 @@ const Profile = () => {
     console.log('Open post:', postId);
   };
 
-const handleEditProfile = () => {
+  const handleEditProfile = () => {
     setShowEditModal(true);
   };
 
@@ -80,7 +80,7 @@ const handleEditProfile = () => {
     );
   }
 
-return (
+  return (
     <div className="max-w-4xl mx-auto p-4 pb-20 md:pb-4">
       {/* Profile Header */}
       <div className="mb-8">
@@ -161,15 +161,15 @@ return (
       {/* Profile Stats */}
       <div className="mt-8 grid grid-cols-3 gap-4">
         <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
-          <div className="text-2xl font-bold text-gray-900">{user?.postsCount || 0}</div>
+          <div className="text-2xl font-bold text-gray-900">{user?.posts_count || 0}</div>
           <div className="text-sm text-gray-500">Posts</div>
         </div>
         <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
-          <div className="text-2xl font-bold text-gray-900">{user?.followersCount || 0}</div>
+          <div className="text-2xl font-bold text-gray-900">{user?.followers_count || 0}</div>
           <div className="text-sm text-gray-500">Followers</div>
         </div>
         <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-gray-100">
-          <div className="text-2xl font-bold text-gray-900">{user?.followingCount || 0}</div>
+          <div className="text-2xl font-bold text-gray-900">{user?.following_count || 0}</div>
           <div className="text-sm text-gray-500">Following</div>
         </div>
       </div>

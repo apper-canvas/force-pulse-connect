@@ -45,7 +45,8 @@ const Home = () => {
       setLoading(false);
     }
   };
-useEffect(() => {
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -104,8 +105,8 @@ useEffect(() => {
             ? {
                 ...post,
                 likes: isLiked 
-                  ? post.likes.filter(id => id !== currentUser.Id)
-                  : [...post.likes, currentUser.Id]
+                  ? (post.likes || '').split(',').filter(id => id !== currentUser.Id.toString()).join(',')
+                  : (post.likes ? post.likes + ',' + currentUser.Id : currentUser.Id.toString())
               }
             : post
         )
@@ -115,7 +116,7 @@ useEffect(() => {
     }
   };
 
-const handleComment = (postId) => {
+  const handleComment = (postId) => {
     const post = posts.find(p => p.Id === postId);
     if (post) {
       setSelectedPost(post);
@@ -141,9 +142,14 @@ const handleComment = (postId) => {
 
   const handleCreatePost = async (postData) => {
     try {
-      const newPost = await postService.create(postData);
-      setPosts(prevPosts => [newPost, ...prevPosts]);
-      toast.success('Post created successfully!');
+      const newPost = await postService.create({
+        ...postData,
+        userId: currentUser.Id
+      });
+      if (newPost) {
+        setPosts(prevPosts => [newPost, ...prevPosts]);
+        toast.success('Post created successfully!');
+      }
     } catch (err) {
       toast.error('Failed to create post');
     }
@@ -183,65 +189,71 @@ const handleComment = (postId) => {
     );
   }
 
-return (
+  return (
     <div className="max-w-6xl mx-auto p-4 pb-20 md:pb-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2">
-      <div className="space-y-4">
-        {posts.map((post) => {
-          const user = getUserById(post.userId);
-          const isLiked = likedPosts.has(post.Id) || post.likes.includes(currentUser?.Id);
-          const isHighlighted = highlightedPostId === post.Id;
+          <div className="space-y-4">
+            {posts.map((post) => {
+              const user = getUserById(post.user_id);
+              const postLikes = post.likes ? post.likes.split(',').filter(id => id.trim()) : [];
+              const isLiked = likedPosts.has(post.Id) || postLikes.includes(currentUser?.Id?.toString());
+              const isHighlighted = highlightedPostId === post.Id;
+              
+              return (
+                <div
+                  key={post.Id}
+                  id={`post-${post.Id}`}
+                  className={`transition-all duration-300 ${
+                    isHighlighted ? 'ring-2 ring-blue-500 ring-opacity-50 shadow-lg' : ''
+                  }`}
+                >
+                  <PostCard
+                    post={{
+                      ...post,
+                      imageUrl: post.image_url,
+                      userId: post.user_id,
+                      likes: postLikes
+                    }}
+                    user={user}
+                    onLike={handleLike}
+                    onComment={handleComment}
+                    onShare={handleShare}
+                    isLiked={isLiked}
+                  />
+                </div>
+              );
+            })}
+          </div>
           
-          return (
-            <div
-              key={post.Id}
-              id={`post-${post.Id}`}
-              className={`transition-all duration-300 ${
-                isHighlighted ? 'ring-2 ring-blue-500 ring-opacity-50 shadow-lg' : ''
-              }`}
-            >
-              <PostCard
-                post={post}
-                user={user}
-                onLike={handleLike}
-                onComment={handleComment}
-                onShare={handleShare}
-                isLiked={isLiked}
-              />
-            </div>
-          );
-})}
+          <CreatePostModal
+            isOpen={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            onSubmit={handleCreatePost}
+            currentUser={currentUser}
+          />
+          
+          <CommentModal
+            isOpen={isCommentModalOpen}
+            onClose={() => {
+              setIsCommentModalOpen(false);
+              setSelectedPost(null);
+            }}
+            post={selectedPost}
+            currentUser={currentUser}
+            onCommentAdded={handleCommentAdded}
+          />
         </div>
         
-<CreatePostModal
-          isOpen={isCreateModalOpen}
-          onClose={() => setIsCreateModalOpen(false)}
-          onSubmit={handleCreatePost}
-          currentUser={currentUser}
-        />
-        
-        <CommentModal
-          isOpen={isCommentModalOpen}
-          onClose={() => {
-            setIsCommentModalOpen(false);
-            setSelectedPost(null);
-          }}
-          post={selectedPost}
-          currentUser={currentUser}
-          onCommentAdded={handleCommentAdded}
-        />
-      </div>
-      
-      {/* Sidebar */}
-      <div className="lg:col-span-1">
-        <div className="sticky top-4 space-y-4">
-          <TrendingHashtags limit={8} />
+        {/* Sidebar */}
+        <div className="lg:col-span-1">
+          <div className="sticky top-4 space-y-4">
+            <TrendingHashtags limit={8} />
+          </div>
         </div>
       </div>
     </div>
-  </div>
   );
 };
 

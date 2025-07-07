@@ -21,7 +21,10 @@ const Explore = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await userService.getSuggestedUsers(1, 10); // Current user ID = 1
+      // Get current user first, then get suggestions
+      const currentUser = await userService.getCurrentUser();
+      const currentUserId = currentUser ? currentUser.Id : 1;
+      const data = await userService.getSuggestedUsers(currentUserId, 10);
       setUsers(data);
     } catch (err) {
       setError(err.message || 'Failed to load suggested users');
@@ -55,7 +58,9 @@ const Explore = () => {
 
   const handleFollow = async (userId) => {
     try {
-      await userService.followUser(1, userId); // Current user ID = 1
+      const currentUser = await userService.getCurrentUser();
+      const currentUserId = currentUser ? currentUser.Id : 1;
+      await userService.followUser(currentUserId, userId);
       setFollowedUsers(prev => new Set(prev).add(userId));
       toast.success('User followed successfully!');
     } catch (err) {
@@ -65,7 +70,9 @@ const Explore = () => {
 
   const handleUnfollow = async (userId) => {
     try {
-      await userService.unfollowUser(1, userId); // Current user ID = 1
+      const currentUser = await userService.getCurrentUser();
+      const currentUserId = currentUser ? currentUser.Id : 1;
+      await userService.unfollowUser(currentUserId, userId);
       setFollowedUsers(prev => {
         const newSet = new Set(prev);
         newSet.delete(userId);

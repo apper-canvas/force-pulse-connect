@@ -60,13 +60,13 @@ const Chat = () => {
           // Update conversations with last messages
           const updatedConvos = convos.map(convo => {
             const convoMessages = allMessages.filter(msg => 
-              (msg.senderId === user.Id && msg.receiverId === convo.Id) ||
-              (msg.senderId === convo.Id && msg.receiverId === user.Id)
+              (msg.sender_id === user.Id && msg.receiver_id === convo.Id) ||
+              (msg.sender_id === convo.Id && msg.receiver_id === user.Id)
             );
             
             const lastMessage = convoMessages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
             const unreadCount = convoMessages.filter(msg => 
-              msg.senderId === convo.Id && !msg.isRead
+              msg.sender_id === convo.Id && !msg.is_read
             ).length;
             
             return {
@@ -147,19 +147,21 @@ const Chat = () => {
       };
 
       const sentMessage = await chatService.sendMessage(messageData);
-      setMessages(prev => [...prev, sentMessage]);
-      setNewMessage('');
-      
-      // Update conversation last message
-      setConversations(prev => 
-        prev.map(c => 
-          c.Id === activeConversation.Id 
-            ? { ...c, lastMessage: sentMessage }
-            : c
-        )
-      );
-      
-      toast.success('Message sent!');
+      if (sentMessage) {
+        setMessages(prev => [...prev, sentMessage]);
+        setNewMessage('');
+        
+        // Update conversation last message
+        setConversations(prev => 
+          prev.map(c => 
+            c.Id === activeConversation.Id 
+              ? { ...c, lastMessage: sentMessage }
+              : c
+          )
+        );
+        
+        toast.success('Message sent!');
+      }
     } catch (error) {
       console.error('Failed to send message:', error);
       toast.error('Failed to send message');
@@ -233,7 +235,7 @@ const Chat = () => {
                     <div className="relative">
                       <Avatar
                         src={conversation.user.avatar}
-                        alt={conversation.user.displayName}
+                        alt={conversation.user.display_name}
                         size="md"
                       />
                       {onlineUsers[conversation.Id] && (
@@ -244,7 +246,7 @@ const Chat = () => {
                     <div className="flex-1 ml-3 min-w-0">
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-gray-900 truncate">
-                          {conversation.user.displayName}
+                          {conversation.user.display_name}
                         </h3>
                         {conversation.lastMessage && (
                           <span className="text-xs text-gray-500">
@@ -283,7 +285,7 @@ const Chat = () => {
                     <div className="relative">
                       <Avatar
                         src={activeConversation.user.avatar}
-                        alt={activeConversation.user.displayName}
+                        alt={activeConversation.user.display_name}
                         size="md"
                       />
                       {onlineUsers[activeConversation.Id] && (
@@ -292,7 +294,7 @@ const Chat = () => {
                     </div>
                     <div className="ml-3">
                       <h2 className="font-semibold text-gray-900">
-                        {activeConversation.user.displayName}
+                        {activeConversation.user.display_name}
                       </h2>
                       <p className="text-sm text-gray-500">
                         {onlineUsers[activeConversation.Id] ? 'Online' : 'Offline'}
@@ -304,7 +306,7 @@ const Chat = () => {
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {messages.map((message) => {
-                    const isCurrentUser = message.senderId === currentUser.Id;
+                    const isCurrentUser = message.sender_id === currentUser.Id;
                     return (
                       <div
                         key={message.Id}

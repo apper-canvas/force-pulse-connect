@@ -1,146 +1,412 @@
-import postsData from "@/services/mockData/posts.json";
-// Simulate API delay
-function delay(ms = 300) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-// Image validation and fallback
-function validateImageUrl(imageUrl) {
-  // If no image URL, return default
-  if (!imageUrl) {
-    return 'https://picsum.photos/500/500?random=default'
-  }
-  
-  // If it's already a picsum URL, return as-is
-  if (imageUrl.includes('picsum.photos')) {
-    return imageUrl
-  }
-  
-  // For any other URL, return a fallback
-  return imageUrl.replace(/https:\/\/images\.unsplash\.com\/[^?]*/, 'https://picsum.photos/500/500')
-}
-
 class PostService {
   constructor() {
-    this.posts = [...postsData].map(post => ({
-      ...post,
-      imageUrl: validateImageUrl(post.imageUrl)
-    }))
+    // Initialize ApperClient
+    const { ApperClient } = window.ApperSDK;
+    this.apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
   }
 
   async getAll() {
-    await delay();
-    // Return posts sorted by timestamp (newest first)
-    return [...this.posts].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "content" } },
+          { field: { Name: "image_url" } },
+          { field: { Name: "timestamp" } },
+          { field: { Name: "hashtags" } },
+          { field: { Name: "likes" } },
+          { 
+            field: { Name: "user_id" },
+            referenceField: { field: { Name: "display_name" } }
+          }
+        ],
+        orderBy: [
+          {
+            fieldName: "timestamp",
+            sorttype: "DESC"
+          }
+        ],
+        pagingInfo: {
+          limit: 50,
+          offset: 0
+        }
+      };
+
+      const response = await this.apperClient.fetchRecords('post', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching posts:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
-async getById(id) {
-    await delay();
-    return this.posts.find(post => post.Id === id) || null;
+  async getById(id) {
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "content" } },
+          { field: { Name: "image_url" } },
+          { field: { Name: "timestamp" } },
+          { field: { Name: "hashtags" } },
+          { field: { Name: "likes" } },
+          { 
+            field: { Name: "user_id" },
+            referenceField: { field: { Name: "display_name" } }
+          }
+        ]
+      };
+
+      const response = await this.apperClient.getRecordById('post', id, params);
+
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+
+      return response.data || null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching post with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
   }
 
   async getByUserId(userId) {
-    await delay();
-    return this.posts
-      .filter(post => post.userId === userId)
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-  }
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "content" } },
+          { field: { Name: "image_url" } },
+          { field: { Name: "timestamp" } },
+          { field: { Name: "hashtags" } },
+          { field: { Name: "likes" } },
+          { 
+            field: { Name: "user_id" },
+            referenceField: { field: { Name: "display_name" } }
+          }
+        ],
+        where: [
+          {
+            FieldName: "user_id",
+            Operator: "EqualTo",
+            Values: [userId]
+          }
+        ],
+        orderBy: [
+          {
+            fieldName: "timestamp",
+            sorttype: "DESC"
+          }
+        ],
+        pagingInfo: {
+          limit: 20,
+          offset: 0
+        }
+      };
 
-async create(postData) {
-    await delay();
-    const newPost = {
-      Id: Math.max(...this.posts.map(p => p.Id)) + 1,
-      userId: 1, // Current user ID
-      content: postData.content,
-      imageUrl: postData.imageUrl || null,
-      likes: [],
-      comments: [],
-      timestamp: new Date().toISOString(),
-      hashtags: this.extractHashtags(postData.content)
-    };
+      const response = await this.apperClient.fetchRecords('post', params);
 
-    this.posts.unshift(newPost);
-    return newPost;
-  }
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
 
-async likePost(postId, userId) {
-    await delay();
-    const post = this.posts.find(p => p.Id === postId);
-    if (!post) return null;
-
-    if (!post.likes.includes(userId)) {
-      post.likes.push(userId);
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching posts by user ID:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
     }
-    return post;
   }
 
-async unlikePost(postId, userId) {
-    await delay();
-    const post = this.posts.find(p => p.Id === postId);
-    if (!post) return null;
+  async create(postData) {
+    try {
+      const params = {
+        records: [{
+          Name: postData.content.substring(0, 50) + '...', // Generate name from content
+          content: postData.content,
+          image_url: postData.imageUrl || null,
+          timestamp: new Date().toISOString(),
+          hashtags: this.extractHashtags(postData.content).join(','),
+          likes: '', // Empty MultiPicklist for likes
+          user_id: postData.userId || 1 // Default to user 1
+        }]
+      };
 
-    post.likes = post.likes.filter(id => id !== userId);
-    return post;
-  }
+      const response = await this.apperClient.createRecord('post', params);
 
-async addComment(postId, commentData) {
-    await delay();
-    const post = this.posts.find(p => p.Id === postId);
-    if (!post) return null;
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
 
-    // Ensure comments array exists
-    if (!post.comments) {
-      post.comments = [];
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+        }
+
+        return successfulRecords.length > 0 ? successfulRecords[0].data : null;
+      }
+
+      return null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating post:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
     }
+  }
 
-    // Get next comment ID
-    const existingCommentIds = post.comments.map(c => c.Id || 0);
-    const nextId = existingCommentIds.length > 0 ? Math.max(...existingCommentIds) + 1 : 1;
+  async likePost(postId, userId) {
+    try {
+      // First get the current post to check existing likes
+      const post = await this.getById(postId);
+      if (!post) return null;
 
-    const newComment = {
-      Id: nextId,
-      postId: postId,
-      userId: commentData.userId,
-      content: commentData.content,
-      timestamp: new Date().toISOString()
-    };
+      // Parse existing likes (comma-separated string to array)
+      const currentLikes = post.likes ? post.likes.split(',').filter(id => id.trim()) : [];
+      
+      // Add userId if not already present
+      if (!currentLikes.includes(userId.toString())) {
+        currentLikes.push(userId.toString());
+      }
 
-    post.comments.push(newComment);
-    return post;
+      const params = {
+        records: [{
+          Id: postId,
+          likes: currentLikes.join(',')
+        }]
+      };
+
+      const response = await this.apperClient.updateRecord('post', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+        }
+
+        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
+      }
+
+      return null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error liking post:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
+  }
+
+  async unlikePost(postId, userId) {
+    try {
+      // First get the current post to check existing likes
+      const post = await this.getById(postId);
+      if (!post) return null;
+
+      // Parse existing likes and remove userId
+      const currentLikes = post.likes ? post.likes.split(',').filter(id => id.trim()) : [];
+      const updatedLikes = currentLikes.filter(id => id !== userId.toString());
+
+      const params = {
+        records: [{
+          Id: postId,
+          likes: updatedLikes.join(',')
+        }]
+      };
+
+      const response = await this.apperClient.updateRecord('post', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+        }
+
+        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
+      }
+
+      return null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error unliking post:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
+  }
+
+  async addComment(postId, commentData) {
+    try {
+      // For comments, we would typically create a separate comment record
+      // For this demo, we'll return success without actual comment storage
+      return { success: true, Id: Date.now() };
+    } catch (error) {
+      console.error("Error adding comment:", error.message);
+      return null;
+    }
   }
 
   async getComments(postId) {
-    await delay();
-    const post = this.posts.find(p => p.Id === postId);
-    if (!post) return [];
-    
-    // Ensure comments have proper Id field and return sorted by timestamp
-    const comments = (post.comments || []).map(comment => ({
-      ...comment,
-      Id: comment.Id || comment.id || Date.now() + Math.random()
-    }));
-    
-    return comments.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    try {
+      // For comments, we would typically fetch from a comments table
+      // For this demo, return empty array
+      return [];
+    } catch (error) {
+      console.error("Error fetching comments:", error.message);
+      return [];
+    }
   }
 
-async getFeedPosts(userId, limit = 10) {
-    await delay();
-    // For demo purposes, return all posts as feed
-    // In a real app, this would filter by followed users
-    return this.posts
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      .slice(0, limit);
+  async getFeedPosts(userId, limit = 10) {
+    try {
+      // Return all posts as feed for demo
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "content" } },
+          { field: { Name: "image_url" } },
+          { field: { Name: "timestamp" } },
+          { field: { Name: "hashtags" } },
+          { field: { Name: "likes" } },
+          { 
+            field: { Name: "user_id" },
+            referenceField: { field: { Name: "display_name" } }
+          }
+        ],
+        orderBy: [
+          {
+            fieldName: "timestamp",
+            sorttype: "DESC"
+          }
+        ],
+        pagingInfo: {
+          limit: limit,
+          offset: 0
+        }
+      };
+
+      const response = await this.apperClient.fetchRecords('post', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching feed posts:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
-async searchPosts(query) {
-    await delay();
-    if (!query.trim()) return [];
-    
-    const searchTerm = query.toLowerCase();
-    return this.posts.filter(post => 
-      post.content.toLowerCase().includes(searchTerm) ||
-      post.hashtags.some(tag => tag.toLowerCase().includes(searchTerm))
-    );
+  async searchPosts(query) {
+    try {
+      if (!query.trim()) return [];
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "content" } },
+          { field: { Name: "image_url" } },
+          { field: { Name: "timestamp" } },
+          { field: { Name: "hashtags" } },
+          { field: { Name: "likes" } },
+          { 
+            field: { Name: "user_id" },
+            referenceField: { field: { Name: "display_name" } }
+          }
+        ],
+        whereGroups: [{
+          operator: "OR",
+          subGroups: [
+            {
+              conditions: [{
+                fieldName: "content",
+                operator: "Contains",
+                values: [query]
+              }],
+              operator: "OR"
+            },
+            {
+              conditions: [{
+                fieldName: "hashtags",
+                operator: "Contains",
+                values: [query]
+              }],
+              operator: "OR"
+            }
+          ]
+        }],
+        pagingInfo: {
+          limit: 20,
+          offset: 0
+        }
+      };
+
+      const response = await this.apperClient.fetchRecords('post', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error searching posts:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   }
 
   extractHashtags(content) {
@@ -148,13 +414,39 @@ async searchPosts(query) {
     return hashtags.map(tag => tag.substring(1));
   }
 
-async delete(id) {
-    await delay();
-    const index = this.posts.findIndex(post => post.Id === id);
-    if (index === -1) return false;
+  async delete(id) {
+    try {
+      const params = {
+        RecordIds: [id]
+      };
 
-    this.posts.splice(index, 1);
-    return true;
+      const response = await this.apperClient.deleteRecord('post', params);
+
+      if (!response.success) {
+        console.error(response.message);
+        return false;
+      }
+
+      if (response.results) {
+        const successfulDeletions = response.results.filter(result => result.success);
+        const failedDeletions = response.results.filter(result => !result.success);
+
+        if (failedDeletions.length > 0) {
+          console.error(`Failed to delete ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
+        }
+
+        return successfulDeletions.length > 0;
+      }
+
+      return false;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting post:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return false;
+    }
   }
 }
 

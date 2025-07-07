@@ -17,6 +17,7 @@ const Notifications = () => {
   const [markingAllAsRead, setMarkingAllAsRead] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -46,7 +47,7 @@ const Notifications = () => {
       setNotifications(prev => 
         prev.map(notification => 
           notification.Id === notificationId 
-            ? { ...notification, isRead: true }
+            ? { ...notification, is_read: true }
             : notification
         )
       );
@@ -60,7 +61,7 @@ const Notifications = () => {
       setMarkingAllAsRead(true);
       await notificationService.markAllAsRead();
       setNotifications(prev => 
-        prev.map(notification => ({ ...notification, isRead: true }))
+        prev.map(notification => ({ ...notification, is_read: true }))
       );
       toast.success('All notifications marked as read');
     } catch (err) {
@@ -68,7 +69,7 @@ const Notifications = () => {
     } finally {
       setMarkingAllAsRead(false);
     }
-};
+  };
 
   const handleOpenDetail = (notification) => {
     setSelectedNotification(notification);
@@ -84,7 +85,7 @@ const Notifications = () => {
     return users.find(user => user.Id === userId);
   };
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter(n => !n.is_read).length;
 
   if (loading) {
     return (
@@ -154,18 +155,18 @@ const Notifications = () => {
       {/* Notifications List */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="divide-y divide-gray-100">
-{notifications.map((notification) => {
-          const user = getUserById(notification.fromUserId);
-          return (
-            <NotificationItem
-              key={notification.Id}
-              notification={notification}
-              user={user}
-              onMarkAsRead={handleMarkAsRead}
-              onOpenDetail={handleOpenDetail}
-            />
-          );
-        })}
+          {notifications.map((notification) => {
+            const user = getUserById(notification.from_user_id);
+            return (
+              <NotificationItem
+                key={notification.Id}
+                notification={notification}
+                user={user}
+                onMarkAsRead={handleMarkAsRead}
+                onOpenDetail={handleOpenDetail}
+              />
+            );
+          })}
         </div>
       </div>
 
@@ -179,12 +180,12 @@ const Notifications = () => {
           <ApperIcon name="RefreshCw" size={16} className="mr-2" />
           Refresh Notifications
         </Button>
-</div>
+      </div>
 
       {/* Notification Detail Modal */}
       <NotificationDetailModal
         notification={selectedNotification}
-        user={selectedNotification ? getUserById(selectedNotification.fromUserId) : null}
+        user={selectedNotification ? getUserById(selectedNotification.from_user_id) : null}
         isOpen={isDetailModalOpen}
         onClose={handleCloseDetail}
         onMarkAsRead={handleMarkAsRead}
