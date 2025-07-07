@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { useLocation, useNavigate } from 'react-router-dom';
 import PostCard from '@/components/organisms/PostCard';
 import CreatePostModal from '@/components/organisms/CreatePostModal';
 import Loading from '@/components/ui/Loading';
@@ -16,6 +17,10 @@ const Home = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [likedPosts, setLikedPosts] = useState(new Set());
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [highlightedPostId, setHighlightedPostId] = useState(null);
+  
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -37,10 +42,41 @@ const Home = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
+useEffect(() => {
     fetchData();
   }, []);
+
+  // Handle postId parameter from notification navigation
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const postId = urlParams.get('postId');
+    
+    if (postId) {
+      const postIdNumber = parseInt(postId, 10);
+      if (!isNaN(postIdNumber)) {
+        setHighlightedPostId(postIdNumber);
+        
+        // Scroll to the post after a brief delay to ensure posts are rendered
+        setTimeout(() => {
+          const postElement = document.getElementById(`post-${postIdNumber}`);
+          if (postElement) {
+            postElement.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center' 
+            });
+          }
+        }, 100);
+        
+        // Remove highlight after 3 seconds
+        setTimeout(() => {
+          setHighlightedPostId(null);
+        }, 3000);
+        
+        // Clean up URL parameter
+        navigate(location.pathname, { replace: true });
+      }
+    }
+  }, [location.search, navigate, location.pathname]);
 
   const handleLike = async (postId) => {
     try {
@@ -130,23 +166,31 @@ const Home = () => {
     );
   }
 
-  return (
+return (
     <div className="max-w-2xl mx-auto p-4 pb-20 md:pb-4">
       <div className="space-y-4">
         {posts.map((post) => {
           const user = getUserById(post.userId);
           const isLiked = likedPosts.has(post.Id) || post.likes.includes(currentUser?.Id);
+          const isHighlighted = highlightedPostId === post.Id;
           
           return (
-            <PostCard
+            <div
               key={post.Id}
-              post={post}
-              user={user}
-              onLike={handleLike}
-              onComment={handleComment}
-              onShare={handleShare}
-              isLiked={isLiked}
-            />
+              id={`post-${post.Id}`}
+              className={`transition-all duration-300 ${
+                isHighlighted ? 'ring-2 ring-blue-500 ring-opacity-50 shadow-lg' : ''
+              }`}
+            >
+              <PostCard
+                post={post}
+                user={user}
+                onLike={handleLike}
+                onComment={handleComment}
+                onShare={handleShare}
+                isLiked={isLiked}
+              />
+            </div>
           );
         })}
       </div>
