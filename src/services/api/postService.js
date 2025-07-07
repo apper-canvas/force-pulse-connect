@@ -415,13 +415,13 @@ async delete(id) {
         return false;
       }
 
-      if (response.results) {
+if (response.results) {
         const successfulDeletions = response.results.filter(result => result.success);
         const failedDeletions = response.results.filter(result => !result.success);
 
         if (failedDeletions.length > 0) {
           console.error(`Failed to delete ${failedDeletions.length} records:${JSON.stringify(failedDeletions)}`);
-}
+        }
 
         return successfulDeletions.length > 0;
       }
