@@ -1,6 +1,4 @@
 import postsData from "@/services/mockData/posts.json";
-import React from "react";
-
 // Simulate API delay
 function delay(ms = 300) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -90,8 +88,17 @@ async addComment(postId, commentData) {
     const post = this.posts.find(p => p.Id === postId);
     if (!post) return null;
 
+    // Ensure comments array exists
+    if (!post.comments) {
+      post.comments = [];
+    }
+
+    // Get next comment ID
+    const existingCommentIds = post.comments.map(c => c.Id || 0);
+    const nextId = existingCommentIds.length > 0 ? Math.max(...existingCommentIds) + 1 : 1;
+
     const newComment = {
-      id: Date.now(),
+      Id: nextId,
       postId: postId,
       userId: commentData.userId,
       content: commentData.content,
@@ -100,6 +107,20 @@ async addComment(postId, commentData) {
 
     post.comments.push(newComment);
     return post;
+  }
+
+  async getComments(postId) {
+    await delay();
+    const post = this.posts.find(p => p.Id === postId);
+    if (!post) return [];
+    
+    // Ensure comments have proper Id field and return sorted by timestamp
+    const comments = (post.comments || []).map(comment => ({
+      ...comment,
+      Id: comment.Id || comment.id || Date.now() + Math.random()
+    }));
+    
+    return comments.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
   }
 
 async getFeedPosts(userId, limit = 10) {

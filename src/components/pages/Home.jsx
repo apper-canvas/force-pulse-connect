@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 import PostCard from '@/components/organisms/PostCard';
 import CreatePostModal from '@/components/organisms/CreatePostModal';
+import CommentModal from '@/components/organisms/CommentModal';
 import TrendingHashtags from '@/components/organisms/TrendingHashtags';
 import Loading from '@/components/ui/Loading';
 import Error from '@/components/ui/Error';
@@ -17,6 +18,8 @@ const Home = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [likedPosts, setLikedPosts] = useState(new Set());
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
   const [highlightedPostId, setHighlightedPostId] = useState(null);
   
   const location = useLocation();
@@ -112,9 +115,23 @@ useEffect(() => {
     }
   };
 
-  const handleComment = (postId) => {
-    // In a real app, this would open a comment modal or navigate to post detail
-    console.log('Comment on post:', postId);
+const handleComment = (postId) => {
+    const post = posts.find(p => p.Id === postId);
+    if (post) {
+      setSelectedPost(post);
+      setIsCommentModalOpen(true);
+    }
+  };
+
+  const handleCommentAdded = (postId) => {
+    // Update the post's comment count in the posts array
+    setPosts(prevPosts =>
+      prevPosts.map(post =>
+        post.Id === postId
+          ? { ...post, comments: [...(post.comments || []), { id: Date.now() }] }
+          : post
+      )
+    );
   };
 
   const handleShare = (postId) => {
@@ -198,11 +215,22 @@ return (
 })}
         </div>
         
-        <CreatePostModal
+<CreatePostModal
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
           onSubmit={handleCreatePost}
           currentUser={currentUser}
+        />
+        
+        <CommentModal
+          isOpen={isCommentModalOpen}
+          onClose={() => {
+            setIsCommentModalOpen(false);
+            setSelectedPost(null);
+          }}
+          post={selectedPost}
+          currentUser={currentUser}
+          onCommentAdded={handleCommentAdded}
         />
       </div>
       
