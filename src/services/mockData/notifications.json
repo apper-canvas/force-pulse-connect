@@ -1,0 +1,66 @@
+[
+  {
+    "Id": 1,
+    "type": "like",
+    "fromUserId": 2,
+    "targetId": 1,
+    "timestamp": "2024-01-15T12:30:00Z",
+    "isRead": false
+  },
+  {
+    "Id": 2,
+    "type": "comment",
+    "fromUserId": 3,
+    "targetId": 1,
+    "timestamp": "2024-01-15T12:00:00Z",
+    "isRead": false
+  },
+  {
+    "Id": 3,
+    "type": "follow",
+    "fromUserId": 5,
+    "targetId": 0,
+    "timestamp": "2024-01-15T11:45:00Z",
+    "isRead": false
+  },
+  {
+    "Id": 4,
+    "type": "like",
+    "fromUserId": 7,
+    "targetId": 9,
+    "timestamp": "2024-01-15T11:30:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 5,
+    "type": "comment",
+    "fromUserId": 8,
+    "targetId": 9,
+    "timestamp": "2024-01-15T11:15:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 6,
+    "type": "follow",
+    "fromUserId": 4,
+    "targetId": 0,
+    "timestamp": "2024-01-15T10:45:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 7,
+    "type": "like",
+    "fromUserId": 6,
+    "targetId": 1,
+    "timestamp": "2024-01-15T10:30:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 8,
+    "type": "comment",
+    "fromUserId": 2,
+    "targetId": 9,
+    "timestamp": "2024-01-15T10:00:00Z",
+    "isRead": true
+  }
+]

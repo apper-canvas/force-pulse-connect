@@ -1,0 +1,90 @@
+[
+  {
+    "Id": 1,
+    "username": "alex_chen",
+    "displayName": "Alex Chen",
+    "bio": "Digital artist & coffee enthusiast ☕ Creating beautiful moments through pixels and code.",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=alex_chen",
+    "isPrivate": false,
+    "followersCount": 1250,
+    "followingCount": 834,
+    "postsCount": 127
+  },
+  {
+    "Id": 2,
+    "username": "sarah_travels",
+    "displayName": "Sarah Johnson",
+    "bio": "🌍 Travel photographer | Capturing memories one sunset at a time | Currently exploring Southeast Asia",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah_travels",
+    "isPrivate": false,
+    "followersCount": 2847,
+    "followingCount": 456,
+    "postsCount": 234
+  },
+  {
+    "Id": 3,
+    "username": "mike_fitness",
+    "displayName": "Mike Rodriguez",
+    "bio": "Personal trainer & nutrition coach 💪 Helping people transform their lives through fitness",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=mike_fitness",
+    "isPrivate": false,
+    "followersCount": 5632,
+    "followingCount": 289,
+    "postsCount": 189
+  },
+  {
+    "Id": 4,
+    "username": "emma_bookworm",
+    "displayName": "Emma Thompson",
+    "bio": "📚 Book lover | Literature teacher | Currently reading: The Seven Husbands of Evelyn Hugo",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=emma_bookworm",
+    "isPrivate": true,
+    "followersCount": 892,
+    "followingCount": 1247,
+    "postsCount": 76
+  },
+  {
+    "Id": 5,
+    "username": "david_chef",
+    "displayName": "David Kim",
+    "bio": "👨‍🍳 Chef & food blogger | Sharing recipes and culinary adventures | DM for cooking tips!",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=david_chef",
+    "isPrivate": false,
+    "followersCount": 3456,
+    "followingCount": 567,
+    "postsCount": 312
+  },
+  {
+    "Id": 6,
+    "username": "lisa_nature",
+    "displayName": "Lisa Green",
+    "bio": "🌿 Nature lover | Environmental scientist | Hiking enthusiast | Let's protect our planet together",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=lisa_nature",
+    "isPrivate": false,
+    "followersCount": 1876,
+    "followingCount": 743,
+    "postsCount": 156
+  },
+  {
+    "Id": 7,
+    "username": "james_music",
+    "displayName": "James Wilson",
+    "bio": "🎵 Musician & producer | Piano is my first love | Sharing my musical journey with the world",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=james_music",
+    "isPrivate": false,
+    "followersCount": 4521,
+    "followingCount": 892,
+    "postsCount": 203
+  },
+  {
+    "Id": 8,
+    "username": "maria_art",
+    "displayName": "Maria Santos",
+    "bio": "🎨 Visual artist | Watercolor specialist | Art teacher | Bringing color to the world, one brushstroke at a time",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=maria_art",
+    "isPrivate": false,
+    "followersCount": 2134,
+    "followingCount": 456,
+    "postsCount": 178
+  }
+]
