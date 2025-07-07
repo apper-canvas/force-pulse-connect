@@ -179,6 +179,43 @@ async create(postData) {
     }
   }
 
+async likePost(postId, userId) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      // Add user to likes array
+      const post = await this.getById(postId);
+      if (!post) return null;
+
+      const currentLikes = post.likes ? post.likes.split(',').filter(id => id) : [];
+      if (!currentLikes.includes(userId.toString())) {
+        currentLikes.push(userId.toString());
+      }
+
+      const params = {
+        records: [{
+          Id: postId,
+          likes: currentLikes.join(',')
+        }]
+      };
+
+      const response = await apperClient.updateRecord('post', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+
+      return response.results?.[0]?.data || null;
+    } catch (error) {
+      console.error('Error liking post:', error);
+      return null;
+    }
+  }
   async likePost(postId, userId) {
 try {
       // First get the current post to check existing likes
@@ -227,6 +264,41 @@ try {
 
 async unlikePost(postId, userId) {
     try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      // Remove user from likes array
+      const post = await this.getById(postId);
+      if (!post) return null;
+
+      const currentLikes = post.likes ? post.likes.split(',').filter(id => id) : [];
+      const updatedLikes = currentLikes.filter(id => id !== userId.toString());
+
+      const params = {
+        records: [{
+          Id: postId,
+          likes: updatedLikes.join(',')
+        }]
+      };
+
+      const response = await apperClient.updateRecord('post', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+
+      return response.results?.[0]?.data || null;
+    } catch (error) {
+      console.error('Error unliking post:', error);
+      return null;
+    }
+  }
+async unlikePost(postId, userId) {
+    try {
       // First get the current post to check existing likes
       const post = await this.getById(postId);
       if (!post) return null;
@@ -267,6 +339,36 @@ async unlikePost(postId, userId) {
     }
   }
 
+async addComment(postId, commentData) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        records: [{
+          Name: `Comment on post ${postId}`,
+          content: commentData.content,
+          timestamp: new Date().toISOString(),
+          user_id: commentData.userId
+        }]
+      };
+
+      const response = await apperClient.createRecord('message', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+
+      return response.results?.[0]?.data || null;
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      return null;
+    }
+  }
 async addComment(postId, commentData) {
     try {
       // For comments, we would typically create a separate comment record
@@ -402,6 +504,31 @@ async addComment(postId, commentData) {
     return hashtags.map(tag => tag.substring(1));
   }
 
+async delete(id) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        RecordIds: [id]
+      };
+
+      const response = await apperClient.deleteRecord('post', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return false;
+      }
+
+      return response.results?.[0]?.success || false;
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      return false;
+    }
+  }
   async delete(id) {
 try {
       const params = {
