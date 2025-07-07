@@ -1,7 +1,8 @@
-import React from 'react';
-import Avatar from '@/components/atoms/Avatar';
-import Button from '@/components/atoms/Button';
-import { cn } from '@/utils/cn';
+import React from "react";
+import { cn } from "@/utils/cn";
+import ApperIcon from "@/components/ApperIcon";
+import Avatar from "@/components/atoms/Avatar";
+import Button from "@/components/atoms/Button";
 
 const UserCard = ({ 
   user, 
@@ -9,6 +10,8 @@ const UserCard = ({
   onUnfollow, 
   isFollowing,
   showFollowButton = true,
+  showMessageButton = false,
+  onMessage,
   className 
 }) => {
   const handleFollowToggle = () => {
@@ -42,15 +45,26 @@ const UserCard = ({
         </div>
       </div>
 
-      {showFollowButton && (
-        <Button
-          variant={isFollowing ? 'outline' : 'primary'}
-          size="sm"
-          onClick={handleFollowToggle}
-        >
-          {isFollowing ? 'Following' : 'Follow'}
-        </Button>
-      )}
+<div className="flex items-center space-x-2">
+        {showFollowButton && (
+          <Button
+            variant={isFollowing ? 'outline' : 'primary'}
+            size="sm"
+            onClick={handleFollowToggle}
+          >
+            {isFollowing ? 'Following' : 'Follow'}
+          </Button>
+        )}
+        {showMessageButton && isFollowing && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onMessage?.(user)}
+          >
+            <ApperIcon name="MessageCircle" size={14} />
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

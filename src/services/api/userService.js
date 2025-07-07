@@ -62,10 +62,33 @@ class UserService {
     return shuffled.slice(0, limit);
   }
 
-  async getCurrentUser() {
+async getCurrentUser() {
     await this.delay();
     // Return the first user as the current user for demo purposes
     return this.users[0] || null;
+  }
+
+  async getMutualFollowers(userId) {
+    await this.delay();
+    // In a real app, this would check mutual follow relationships
+    // For demo, return users 2-4 as mutual followers
+    return this.users.filter(user => user.Id !== userId && user.Id <= 4);
+  }
+
+  async getUserOnlineStatus(userId) {
+    await this.delay();
+    // Simulate online status - randomly return true/false
+    return Math.random() > 0.3;
+  }
+
+  async getMultipleOnlineStatus(userIds) {
+    await this.delay();
+    // Return online status for multiple users
+    const statuses = {};
+    userIds.forEach(id => {
+      statuses[id] = Math.random() > 0.3;
+    });
+    return statuses;
   }
 }
 

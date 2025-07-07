@@ -12,6 +12,7 @@ const UserProfile = ({
   onFollow, 
   onUnfollow,
   onEdit,
+  onMessage,
   className 
 }) => {
   const handleFollowToggle = () => {
@@ -53,13 +54,21 @@ const UserProfile = ({
                 <ApperIcon name="Edit" size={16} className="mr-2" />
                 Edit Profile
               </Button>
-            ) : (
-              <Button
-                variant={isFollowing ? 'outline' : 'primary'}
-                onClick={handleFollowToggle}
-              >
-                {isFollowing ? 'Following' : 'Follow'}
-              </Button>
+) : (
+              <>
+                <Button
+                  variant={isFollowing ? 'outline' : 'primary'}
+                  onClick={handleFollowToggle}
+                >
+                  {isFollowing ? 'Following' : 'Follow'}
+                </Button>
+                {isFollowing && (
+                  <Button variant="outline" onClick={() => onMessage?.(user)}>
+                    <ApperIcon name="MessageCircle" size={16} className="mr-2" />
+                    Message
+                  </Button>
+                )}
+              </>
             )}
             <Button variant="ghost" size="icon">
               <ApperIcon name="MoreHorizontal" size={20} />

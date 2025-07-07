@@ -7,14 +7,16 @@ import { cn } from '@/utils/cn';
 const NavBar = ({ 
   onCreatePost, 
   notificationCount = 0,
+  messageCount = 0,
   className 
 }) => {
   const location = useLocation();
   
-  const navItems = [
+const navItems = [
     { path: '/', icon: 'Home', label: 'Home' },
     { path: '/explore', icon: 'Search', label: 'Explore' },
     { path: '/notifications', icon: 'Bell', label: 'Notifications' },
+    { path: '/messages', icon: 'MessageCircle', label: 'Messages' },
     { path: '/profile', icon: 'User', label: 'Profile' }
   ];
 
@@ -46,9 +48,12 @@ const NavBar = ({
                   isActive ? 'text-primary bg-primary bg-opacity-10' : 'text-gray-700'
                 )}
               >
-                <div className="relative">
+<div className="relative">
                   <ApperIcon name={item.icon} size={20} />
                   {item.icon === 'Bell' && notificationCount > 0 && (
+                    <span className="notification-dot" />
+                  )}
+                  {item.icon === 'MessageCircle' && messageCount > 0 && (
                     <span className="notification-dot" />
                   )}
                 </div>
@@ -77,9 +82,12 @@ const NavBar = ({
                 isActive ? 'text-primary' : 'text-gray-500'
               )}
             >
-              <div className="relative">
+<div className="relative">
                 <ApperIcon name={item.icon} size={20} />
                 {item.icon === 'Bell' && notificationCount > 0 && (
+                  <span className="notification-dot" />
+                )}
+                {item.icon === 'MessageCircle' && messageCount > 0 && (
                   <span className="notification-dot" />
                 )}
               </div>

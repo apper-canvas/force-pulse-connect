@@ -1,0 +1,98 @@
+[
+  {
+    "Id": 1,
+    "senderId": 2,
+    "receiverId": 1,
+    "content": "Hey Alex! I saw your latest digital art piece. It's absolutely stunning! 🎨",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 2,
+    "senderId": 1,
+    "receiverId": 2,
+    "content": "Thank you so much Sarah! That means a lot coming from you. Your travel photography always inspires me.",
+    "timestamp": "2024-01-15T10:32:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 3,
+    "senderId": 2,
+    "receiverId": 1,
+    "content": "We should collaborate sometime! I'd love to capture some behind-the-scenes shots of your creative process.",
+    "timestamp": "2024-01-15T10:35:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 4,
+    "senderId": 1,
+    "receiverId": 2,
+    "content": "That sounds amazing! I'm working on a new series next week. Want to document it?",
+    "timestamp": "2024-01-15T10:37:00Z",
+    "isRead": false
+  },
+  {
+    "Id": 5,
+    "senderId": 3,
+    "receiverId": 1,
+    "content": "Alex, I need some motivation for my morning workout. Your discipline with your art practice is inspiring! 💪",
+    "timestamp": "2024-01-15T06:00:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 6,
+    "senderId": 1,
+    "receiverId": 3,
+    "content": "You got this Mike! Consistency is key in both art and fitness. Start small and build momentum.",
+    "timestamp": "2024-01-15T06:05:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 7,
+    "senderId": 4,
+    "receiverId": 1,
+    "content": "I just finished reading 'The Artist's Way' and thought you might enjoy it. It's all about creative blocks and breakthrough techniques.",
+    "timestamp": "2024-01-14T20:15:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 8,
+    "senderId": 1,
+    "receiverId": 4,
+    "content": "Emma, that book is on my reading list! Thanks for the recommendation. How did you find it?",
+    "timestamp": "2024-01-14T20:20:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 9,
+    "senderId": 4,
+    "receiverId": 1,
+    "content": "Life-changing! The morning pages technique has really helped me clarify my thoughts. You should try it!",
+    "timestamp": "2024-01-14T20:25:00Z",
+    "isRead": false
+  },
+  {
+    "Id": 10,
+    "senderId": 2,
+    "receiverId": 3,
+    "content": "Mike, I'm planning a hiking trip to the mountains next month. Want to join? It could be a great workout!",
+    "timestamp": "2024-01-15T14:00:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 11,
+    "senderId": 3,
+    "receiverId": 2,
+    "content": "Count me in! I've been looking for an excuse to test my endurance. When are you thinking?",
+    "timestamp": "2024-01-15T14:15:00Z",
+    "isRead": true
+  },
+  {
+    "Id": 12,
+    "senderId": 2,
+    "receiverId": 3,
+    "content": "Perfect! I was thinking the second weekend of February. I'll send you the details soon.",
+    "timestamp": "2024-01-15T14:30:00Z",
+    "isRead": false
+  }
+]

@@ -6,6 +6,7 @@ import Home from '@/components/pages/Home';
 import Explore from '@/components/pages/Explore';
 import Notifications from '@/components/pages/Notifications';
 import Profile from '@/components/pages/Profile';
+import Chat from '@/components/pages/Chat';
 import CreatePostModal from '@/components/organisms/CreatePostModal';
 import { useNotifications } from '@/hooks/useNotifications';
 import userService from '@/services/api/userService';
@@ -49,10 +50,11 @@ function App() {
         />
         
         <main className="pt-4 md:pt-0">
-          <Routes>
+<Routes>
             <Route path="/" element={<Home />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/messages" element={<Chat />} />
             <Route path="/profile" element={<Profile />} />
           </Routes>
         </main>
