@@ -172,11 +172,11 @@ class UserService {
       const response = await this.apperClient.updateRecord('app_User', params);
 
       if (!response.success) {
-        console.error(response.message);
+console.error(response.message);
         return null;
       }
 
-if (response.results) {
+      if (response.results) {
         const successfulUpdates = response.results.filter(result => result.success);
         const failedUpdates = response.results.filter(result => !result.success);
 
@@ -186,6 +186,8 @@ if (response.results) {
 
         return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
       }
+
+      return null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error updating profile:", error?.response?.data?.message);
