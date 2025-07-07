@@ -1,35 +1,55 @@
-import postsData from '@/services/mockData/posts.json';
+import postsData from "@/services/mockData/posts.json";
+import React from "react";
+
+// Simulate API delay
+function delay(ms = 300) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+// Image validation and fallback
+function validateImageUrl(imageUrl) {
+  // If no image URL, return default
+  if (!imageUrl) {
+    return 'https://picsum.photos/500/500?random=default'
+  }
+  
+  // If it's already a picsum URL, return as-is
+  if (imageUrl.includes('picsum.photos')) {
+    return imageUrl
+  }
+  
+  // For any other URL, return a fallback
+  return imageUrl.replace(/https:\/\/images\.unsplash\.com\/[^?]*/, 'https://picsum.photos/500/500')
+}
 
 class PostService {
   constructor() {
-    this.posts = [...postsData];
-  }
-
-  // Simulate API delay
-  delay(ms = 300) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    this.posts = [...postsData].map(post => ({
+      ...post,
+      imageUrl: validateImageUrl(post.imageUrl)
+    }))
   }
 
   async getAll() {
-    await this.delay();
+    await delay();
     // Return posts sorted by timestamp (newest first)
     return [...this.posts].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   }
 
-  async getById(id) {
-    await this.delay();
+async getById(id) {
+    await delay();
     return this.posts.find(post => post.Id === id) || null;
   }
 
   async getByUserId(userId) {
-    await this.delay();
+    await delay();
     return this.posts
       .filter(post => post.userId === userId)
       .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   }
 
-  async create(postData) {
-    await this.delay();
+async create(postData) {
+    await delay();
     const newPost = {
       Id: Math.max(...this.posts.map(p => p.Id)) + 1,
       userId: 1, // Current user ID
@@ -45,8 +65,8 @@ class PostService {
     return newPost;
   }
 
-  async likePost(postId, userId) {
-    await this.delay();
+async likePost(postId, userId) {
+    await delay();
     const post = this.posts.find(p => p.Id === postId);
     if (!post) return null;
 
@@ -56,8 +76,8 @@ class PostService {
     return post;
   }
 
-  async unlikePost(postId, userId) {
-    await this.delay();
+async unlikePost(postId, userId) {
+    await delay();
     const post = this.posts.find(p => p.Id === postId);
     if (!post) return null;
 
@@ -65,8 +85,8 @@ class PostService {
     return post;
   }
 
-  async addComment(postId, commentData) {
-    await this.delay();
+async addComment(postId, commentData) {
+    await delay();
     const post = this.posts.find(p => p.Id === postId);
     if (!post) return null;
 
@@ -82,8 +102,8 @@ class PostService {
     return post;
   }
 
-  async getFeedPosts(userId, limit = 10) {
-    await this.delay();
+async getFeedPosts(userId, limit = 10) {
+    await delay();
     // For demo purposes, return all posts as feed
     // In a real app, this would filter by followed users
     return this.posts
@@ -91,8 +111,8 @@ class PostService {
       .slice(0, limit);
   }
 
-  async searchPosts(query) {
-    await this.delay();
+async searchPosts(query) {
+    await delay();
     if (!query.trim()) return [];
     
     const searchTerm = query.toLowerCase();
@@ -107,8 +127,8 @@ class PostService {
     return hashtags.map(tag => tag.substring(1));
   }
 
-  async delete(id) {
-    await this.delay();
+async delete(id) {
+    await delay();
     const index = this.posts.findIndex(post => post.Id === id);
     if (index === -1) return false;
 

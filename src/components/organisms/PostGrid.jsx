@@ -1,59 +1,79 @@
-import React from 'react';
-import ApperIcon from '@/components/ApperIcon';
-import { cn } from '@/utils/cn';
+import React, { useState } from "react";
+import { cn } from "@/utils/cn";
+import ApperIcon from "@/components/ApperIcon";
 
-const PostGrid = ({ 
-  posts = [], 
-  onPostClick,
-  className 
-}) => {
-  if (posts.length === 0) {
+function PostGrid({ posts, onPostClick, className }) {
+  const [imageErrors, setImageErrors] = useState({})
+  const [imageLoading, setImageLoading] = useState({})
+
+  if (!posts || posts.length === 0) {
     return (
       <div className="text-center py-12">
-        <ApperIcon name="Grid3x3" size={48} className="mx-auto text-gray-300 mb-4" />
-        <p className="text-gray-500 text-lg">No posts yet</p>
+        <ApperIcon name="ImageOff" className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+        <p className="text-gray-500 text-lg">No posts to display</p>
       </div>
-    );
+    )
   }
 
-  return (
-    <div className={cn(
-      'grid grid-cols-3 gap-1 md:gap-2',
-      className
-    )}>
+  const handleImageLoad = (postId) => {
+    setImageLoading(prev => ({ ...prev, [postId]: false }))
+    setImageErrors(prev => ({ ...prev, [postId]: false }))
+  }
+
+  const handleImageError = (postId) => {
+    setImageLoading(prev => ({ ...prev, [postId]: false }))
+    setImageErrors(prev => ({ ...prev, [postId]: true }))
+  }
+
+  const getImageUrl = (post) => {
+    if (imageErrors[post.Id]) {
+      return `https://picsum.photos/400/400?random=grid-${post.Id}`
+    }
+    return post.imageUrl || `https://picsum.photos/400/400?random=${post.Id}`
+  }
+
+return (
+    <div className={cn("grid grid-cols-3 gap-1 md:gap-2", className)}>
       {posts.map((post) => (
         <div
           key={post.Id}
-          className="aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+          className="aspect-square overflow-hidden rounded-2xl bg-gray-100 relative cursor-pointer group"
           onClick={() => onPostClick?.(post.Id)}
         >
-          {post.imageUrl ? (
-            <img
-              src={post.imageUrl}
-              alt="Post"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-              <ApperIcon name="FileText" size={24} className="text-gray-400" />
+          {imageLoading[post.Id] !== false && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
             </div>
           )}
-          
-          {/* Hover overlay with stats */}
-          <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center space-x-4">
-            <div className="flex items-center text-white">
-              <ApperIcon name="Heart" size={16} className="mr-1" />
-              <span className="text-sm">{post.likes?.length || 0}</span>
+          {post.imageUrl || imageErrors[post.Id] ? (
+            <img
+              src={getImageUrl(post)}
+              alt="Post content"
+              className={cn(
+                "w-full h-full object-cover transition-all duration-300",
+                imageLoading[post.Id] !== false ? "opacity-0" : "opacity-100 group-hover:scale-105",
+                imageErrors[post.Id] ? "filter grayscale" : ""
+              )}
+              loading="lazy"
+              onLoad={() => handleImageLoad(post.Id)}
+              onError={() => handleImageError(post.Id)}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+              <ApperIcon name="Image" className="w-12 h-12 text-gray-400" />
             </div>
-            <div className="flex items-center text-white">
-              <ApperIcon name="MessageCircle" size={16} className="mr-1" />
-              <span className="text-sm">{post.comments?.length || 0}</span>
+          )}
+          {imageErrors[post.Id] && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="text-center text-white">
+                <ApperIcon name="ImageOff" className="w-6 h-6 mx-auto mb-1" />
+                <p className="text-xs">Image unavailable</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       ))}
     </div>
   );
 };
-
 export default PostGrid;

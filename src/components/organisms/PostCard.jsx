@@ -1,21 +1,48 @@
-import React, { useState } from 'react';
-import Avatar from '@/components/atoms/Avatar';
-import Button from '@/components/atoms/Button';
-import PostActions from '@/components/molecules/PostActions';
-import ApperIcon from '@/components/ApperIcon';
-import { formatDistanceToNow } from 'date-fns';
-import { cn } from '@/utils/cn';
+import React, { useState } from "react";
+import { formatDistanceToNow } from "date-fns";
+import { cn } from "@/utils/cn";
+import ApperIcon from "@/components/ApperIcon";
+import Avatar from "@/components/atoms/Avatar";
+import Button from "@/components/atoms/Button";
+import PostActions from "@/components/molecules/PostActions";
 
-const PostCard = ({ 
-  post, 
-  user, 
-  onLike, 
-  onComment, 
-  onShare,
-  isLiked,
-  className 
-}) => {
-  const [showComments, setShowComments] = useState(false);
+function PostCard({ post, user, onLike, onComment, onShare, className }) {
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [showComments, setShowComments] = useState(false)
+  const [imageLoading, setImageLoading] = useState(true)
+  const [imageError, setImageError] = useState(false)
+  const [retryCount, setRetryCount] = useState(0)
+
+  if (!post || !user) {
+    return null
+  }
+
+  const handleImageLoad = () => {
+    setImageLoading(false)
+    setImageError(false)
+  }
+
+  const handleImageError = () => {
+    setImageLoading(false)
+    if (retryCount < 2) {
+      // Retry with a different image
+      setRetryCount(prev => prev + 1)
+      setImageError(false)
+      setImageLoading(true)
+      return
+    }
+    setImageError(true)
+  }
+
+  const getImageUrl = () => {
+    if (imageError) {
+      return `https://picsum.photos/500/500?random=fallback-${post.Id}`
+    }
+    if (retryCount > 0) {
+      return `https://picsum.photos/500/500?random=retry-${post.Id}-${retryCount}`
+    }
+return post.imageUrl || `https://picsum.photos/500/500?random=${post.Id}`
+  }
 
   const formatContent = (content) => {
     return content.split(' ').map((word, index) => {
@@ -35,6 +62,7 @@ const PostCard = ({
     onComment?.(post.Id);
   };
 
+  const isLiked = post.likes?.some(like => like.userId === user?.id) || false;
   return (
     <div className={cn('post-card p-6 mb-4', className)}>
       {/* Post Header */}
@@ -45,36 +73,68 @@ const PostCard = ({
             alt={user?.displayName}
             size="md"
           />
-          <div>
+<div>
             <h3 className="font-semibold text-gray-900">{user?.displayName}</h3>
             <p className="text-sm text-gray-500">
-              @{user?.username} • {formatDistanceToNow(new Date(post.timestamp))} ago
+              {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
             </p>
           </div>
         </div>
-        <Button variant="ghost" size="icon" className="text-gray-400">
-          <ApperIcon name="MoreHorizontal" size={20} />
+        <Button variant="ghost" size="sm">
+          <ApperIcon name="MoreHorizontal" className="w-4 h-4" />
         </Button>
       </div>
 
       {/* Post Content */}
       <div className="mb-4">
-        <p className="text-gray-900 leading-relaxed">
-          {formatContent(post.content)}
-        </p>
+        <div className={cn(
+          "text-gray-900 leading-relaxed",
+          !isExpanded && post.content?.length > 200 ? "line-clamp-3" : ""
+        )}>
+          {formatContent(post.content || '')}
+        </div>
+        {post.content?.length > 200 && (
+          <Button 
+            variant="link" 
+            size="sm" 
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-primary p-0 h-auto font-normal"
+          >
+            {isExpanded ? 'Show less' : 'Read more'}
+          </Button>
+        )}
       </div>
 
       {/* Post Image */}
-      {post.imageUrl && (
-        <div className="mb-4">
-          <img
-            src={post.imageUrl}
-            alt="Post content"
-            className="w-full h-auto rounded-xl object-cover max-h-96"
-          />
-        </div>
-      )}
-
+      {(post.imageUrl || imageError) && (
+        <div className="mb-4 rounded-2xl overflow-hidden bg-gray-100 relative">
+            {imageLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            )}
+            <img
+              src={getImageUrl()}
+              alt="Post content"
+              className={cn(
+                "w-full h-auto object-cover transition-all duration-300",
+                imageLoading ? "opacity-0" : "opacity-100 hover:scale-105",
+                imageError ? "filter grayscale" : ""
+              )}
+              loading="lazy"
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+            />
+            {imageError && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                <div className="text-center text-gray-500">
+                  <ApperIcon name="ImageOff" className="w-8 h-8 mx-auto mb-2" />
+                  <p className="text-sm">Image unavailable</p>
+                </div>
+              </div>
+            )}
+          </div>
+)}
       {/* Post Actions */}
       <PostActions
         post={post}
