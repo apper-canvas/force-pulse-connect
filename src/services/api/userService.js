@@ -207,7 +207,7 @@ class UserService {
       console.error("Error following user:", error.message);
       return { success: false };
     }
-  }
+}
 
   async unfollowUser(userId, targetUserId) {
     try {
@@ -219,7 +219,6 @@ class UserService {
       return { success: false };
     }
   }
-
   async getSuggestedUsers(userId, limit = 5) {
     try {
       const params = {

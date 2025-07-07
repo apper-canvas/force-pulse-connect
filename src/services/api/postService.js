@@ -279,7 +279,7 @@ class PostService {
     }
   }
 
-  async addComment(postId, commentData) {
+async addComment(postId, commentData) {
     try {
       // For comments, we would typically create a separate comment record
       // For this demo, we'll return success without actual comment storage
