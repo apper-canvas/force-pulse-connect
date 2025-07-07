@@ -194,7 +194,7 @@ async getAll() {
     }
   }
 
-  async followUser(userId, targetUserId) {
+async followUser(userId, targetUserId) {
     try {
       // In a real implementation, this would create a follow relationship
       // For now, just return success
@@ -205,7 +205,7 @@ async getAll() {
     }
   }
 
-  async unfollowUser(userId, targetUserId) {
+async unfollowUser(userId, targetUserId) {
     try {
       // In a real implementation, this would remove a follow relationship
       // For now, just return success
