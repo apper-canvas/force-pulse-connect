@@ -161,6 +161,7 @@ class UserService {
           delete updateableFields[key];
         }
       });
+};
 
       const params = {
         records: [{
@@ -169,7 +170,7 @@ class UserService {
         }]
       };
 
-const response = await this.apperClient.updateRecord('app_User', params);
+      const response = await this.apperClient.updateRecord('app_User', params);
 
       if (!response.success) {
         console.error(response.message);
@@ -191,7 +192,6 @@ const response = await this.apperClient.updateRecord('app_User', params);
         console.error(error.message);
       }
       return null;
-    }
   }
 
   async followUser(userId, targetUserId) {
