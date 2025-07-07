@@ -425,8 +425,6 @@ async delete(id) {
 
         return successfulDeletions.length > 0;
       }
-
-      return false;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error deleting post:", error?.response?.data?.message);
