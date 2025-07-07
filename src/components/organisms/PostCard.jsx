@@ -313,12 +313,12 @@ const handleGalleryClick = (index) => {
     });
   };
 
-const handleComment = () => {
+  const handleComment = () => {
     setShowComments(!showComments);
-    onComment?.(post?.id);
+    onComment?.(post.Id);
   };
 
-  const isLiked = post?.likes?.some(like => like.userId === user?.id) || false;
+  const isLiked = post.likes?.some(like => like.userId === user?.id) || false;
   return (
     <div className={cn('post-card p-6 mb-4', className)}>
       {/* Post Header */}

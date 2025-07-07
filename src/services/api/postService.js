@@ -22,9 +22,8 @@ function validateImageUrl(imageUrl) {
 
 class PostService {
   constructor() {
-this.posts = [...postsData].map(post => ({
+    this.posts = [...postsData].map(post => ({
       ...post,
-      id: post.id || post.Id, // Ensure consistent lowercase id
       imageUrl: validateImageUrl(post.imageUrl)
     }))
   }
