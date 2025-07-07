@@ -10,41 +10,6 @@ class UserService {
 
 async getAll() {
     try {
-      const { ApperClient } = window.ApperSDK;
-      const apperClient = new ApperClient({
-        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
-        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
-      });
-
-      const params = {
-        fields: [
-          { field: { Name: "Name" } },
-          { field: { Name: "username" } },
-          { field: { Name: "display_name" } },
-          { field: { Name: "bio" } },
-          { field: { Name: "avatar" } },
-          { field: { Name: "is_private" } },
-          { field: { Name: "followers_count" } },
-          { field: { Name: "following_count" } },
-          { field: { Name: "posts_count" } }
-        ]
-      };
-
-      const response = await apperClient.fetchRecords('app_User', params);
-      
-      if (!response.success) {
-        console.error(response.message);
-        return [];
-      }
-
-      return response.data || [];
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      return [];
-    }
-  }
-  async getAll() {
-    try {
       const params = {
         fields: [
           { field: { Name: "Name" } },
@@ -81,41 +46,6 @@ async getAll() {
     }
   }
 
-async getById(id) {
-    try {
-      const { ApperClient } = window.ApperSDK;
-      const apperClient = new ApperClient({
-        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
-        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
-      });
-
-      const params = {
-        fields: [
-          { field: { Name: "Name" } },
-          { field: { Name: "username" } },
-          { field: { Name: "display_name" } },
-          { field: { Name: "bio" } },
-          { field: { Name: "avatar" } },
-          { field: { Name: "is_private" } },
-          { field: { Name: "followers_count" } },
-          { field: { Name: "following_count" } },
-          { field: { Name: "posts_count" } }
-        ]
-      };
-
-      const response = await apperClient.getRecordById('app_User', id, params);
-      
-      if (!response.success) {
-        console.error(response.message);
-        return null;
-      }
-
-      return response.data || null;
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      return null;
-    }
-  }
   async getById(id) {
     try {
       const params = {
@@ -150,64 +80,6 @@ async getById(id) {
     }
   }
 
-async searchUsers(query) {
-    try {
-      const { ApperClient } = window.ApperSDK;
-      const apperClient = new ApperClient({
-        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
-        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
-      });
-
-      const params = {
-        fields: [
-          { field: { Name: "Name" } },
-          { field: { Name: "username" } },
-          { field: { Name: "display_name" } },
-          { field: { Name: "bio" } },
-          { field: { Name: "avatar" } },
-          { field: { Name: "is_private" } },
-          { field: { Name: "followers_count" } },
-          { field: { Name: "following_count" } },
-          { field: { Name: "posts_count" } }
-        ],
-        whereGroups: [{
-          operator: "OR",
-          subGroups: [
-            {
-              conditions: [{
-                fieldName: "username",
-                operator: "Contains",
-                values: [query],
-                include: true
-              }],
-              operator: "OR"
-            },
-            {
-              conditions: [{
-                fieldName: "display_name",
-                operator: "Contains",
-                values: [query],
-                include: true
-              }],
-              operator: "OR"
-            }
-          ]
-        }]
-      };
-
-      const response = await apperClient.fetchRecords('app_User', params);
-      
-      if (!response.success) {
-        console.error(response.message);
-        return [];
-      }
-
-      return response.data || [];
-    } catch (error) {
-      console.error('Error searching users:', error);
-      return [];
-    }
-  }
   async searchUsers(query) {
     try {
       if (!query.trim()) return [];
@@ -269,34 +141,6 @@ async searchUsers(query) {
     }
   }
 
-async updateProfile(id, updates) {
-    try {
-      const { ApperClient } = window.ApperSDK;
-      const apperClient = new ApperClient({
-        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
-        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
-      });
-
-      const params = {
-        records: [{
-          Id: id,
-          ...updates
-        }]
-      };
-
-      const response = await apperClient.updateRecord('app_User', params);
-      
-      if (!response.success) {
-        console.error(response.message);
-        return null;
-      }
-
-      return response.results?.[0]?.data || null;
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      return null;
-    }
-  }
   async updateProfile(id, updates) {
     try {
       // Only include updateable fields
@@ -312,7 +156,7 @@ async updateProfile(id, updates) {
       };
 
       // Remove undefined fields
-Object.keys(updateableFields).forEach(key => {
+      Object.keys(updateableFields).forEach(key => {
         if (updateableFields[key] === undefined) {
           delete updateableFields[key];
         }
@@ -345,15 +189,11 @@ Object.keys(updateableFields).forEach(key => {
         console.error("Error updating profile:", error?.response?.data?.message);
       } else {
         console.error(error.message);
-}
+      }
       return null;
     }
   }
 
-async followUser(userId, targetUserId) {
-    // Implementation for following user
-    return { success: true, userId, targetUserId };
-  }
   async followUser(userId, targetUserId) {
     try {
       // In a real implementation, this would create a follow relationship
@@ -363,12 +203,8 @@ async followUser(userId, targetUserId) {
       console.error("Error following user:", error.message);
       return { success: false };
     }
-}
-
-async unfollowUser(userId, targetUserId) {
-    // Implementation for unfollowing user
-    return { success: true, userId, targetUserId };
   }
+
   async unfollowUser(userId, targetUserId) {
     try {
       // In a real implementation, this would remove a follow relationship
@@ -379,42 +215,7 @@ async unfollowUser(userId, targetUserId) {
       return { success: false };
     }
   }
-async getSuggestedUsers(userId, limit = 5) {
-    try {
-      const { ApperClient } = window.ApperSDK;
-      const apperClient = new ApperClient({
-        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
-        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
-      });
 
-      const params = {
-        fields: [
-          { field: { Name: "Name" } },
-          { field: { Name: "username" } },
-          { field: { Name: "display_name" } },
-          { field: { Name: "bio" } },
-          { field: { Name: "avatar" } },
-          { field: { Name: "followers_count" } }
-        ],
-        pagingInfo: {
-          limit: limit,
-          offset: 0
-        }
-      };
-
-      const response = await apperClient.fetchRecords('app_User', params);
-      
-      if (!response.success) {
-        console.error(response.message);
-        return [];
-      }
-
-      return response.data || [];
-    } catch (error) {
-      console.error('Error getting suggested users:', error);
-      return [];
-    }
-  }
   async getSuggestedUsers(userId, limit = 5) {
     try {
       const params = {
@@ -455,16 +256,6 @@ async getSuggestedUsers(userId, limit = 5) {
     }
   }
 
-async getCurrentUser() {
-    try {
-      // Get current user from authentication context
-      const currentUserId = 1; // This should come from auth context
-      return await this.getById(currentUserId);
-    } catch (error) {
-      console.error('Error getting current user:', error);
-      return null;
-    }
-  }
   async getCurrentUser() {
     try {
       const params = {
@@ -504,15 +295,6 @@ async getCurrentUser() {
     }
   }
 
-async getMutualFollowers(userId) {
-    try {
-      // Implementation for getting mutual followers
-      return [];
-    } catch (error) {
-      console.error('Error getting mutual followers:', error);
-      return [];
-    }
-  }
   async getMutualFollowers(userId) {
     try {
       // For demo purposes, return a subset of users as mutual followers
@@ -554,19 +336,11 @@ async getMutualFollowers(userId) {
     }
   }
 
-async getUserOnlineStatus(userId) {
-    // Implementation for getting user online status
-    return { userId, isOnline: false };
-  }
   async getUserOnlineStatus(userId) {
     // Simulate online status - randomly return true/false
     return Math.random() > 0.3;
   }
 
-async getMultipleOnlineStatus(userIds) {
-    // Implementation for getting multiple users' online status
-    return userIds.map(id => ({ userId: id, isOnline: false }));
-  }
   async getMultipleOnlineStatus(userIds) {
     // Return online status for multiple users
     const statuses = {};
@@ -576,42 +350,6 @@ async getMultipleOnlineStatus(userIds) {
     return statuses;
   }
 
-async getFriendSuggestions(userId, limit = 5) {
-    try {
-      const { ApperClient } = window.ApperSDK;
-      const apperClient = new ApperClient({
-        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
-        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
-      });
-
-      const params = {
-        fields: [
-          { field: { Name: "Name" } },
-          { field: { Name: "username" } },
-          { field: { Name: "display_name" } },
-          { field: { Name: "bio" } },
-          { field: { Name: "avatar" } },
-          { field: { Name: "followers_count" } }
-        ],
-        pagingInfo: {
-          limit: limit,
-          offset: 0
-        }
-      };
-
-      const response = await apperClient.fetchRecords('app_User', params);
-      
-      if (!response.success) {
-        console.error(response.message);
-        return [];
-      }
-
-      return response.data || [];
-    } catch (error) {
-      console.error('Error getting friend suggestions:', error);
-      return [];
-    }
-  }
   async getFriendSuggestions(userId, limit = 5) {
     try {
       const params = {
@@ -660,15 +398,6 @@ async getFriendSuggestions(userId, limit = 5) {
     }
   }
 
-async getMutualFriends(userId1, userId2) {
-    try {
-      // Implementation for getting mutual friends
-      return [];
-    } catch (error) {
-      console.error('Error getting mutual friends:', error);
-      return [];
-    }
-  }
   async getMutualFriends(userId1, userId2) {
     try {
       // For demo purposes, return a subset of users as mutual friends
