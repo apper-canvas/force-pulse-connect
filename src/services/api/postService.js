@@ -154,12 +154,12 @@ class PostService {
         }]
       };
 
-      const response = await this.apperClient.createRecord('post', params);
+const response = await this.apperClient.createRecord('post', params);
 
-if (!response.success) {
+      if (!response.success) {
         console.error(response.message);
         return null;
-}
+      }
 
       const successfulRecords = response.results.filter(result => result.success);
       const failedRecords = response.results.filter(result => !result.success);
@@ -200,12 +200,12 @@ if (!response.success) {
         }]
       };
 
-      const response = await this.apperClient.updateRecord('post', params);
+const response = await this.apperClient.updateRecord('post', params);
 
-if (!response.success) {
+      if (!response.success) {
         console.error(response.message);
         return null;
-}
+      }
 
       const successfulUpdates = response.results.filter(result => result.success);
       const failedUpdates = response.results.filter(result => !result.success);
@@ -242,12 +242,12 @@ if (!response.success) {
         }]
       };
 
-      const response = await this.apperClient.updateRecord('post', params);
+const response = await this.apperClient.updateRecord('post', params);
 
-if (!response.success) {
+      if (!response.success) {
         console.error(response.message);
         return null;
-}
+      }
 
       const successfulUpdates = response.results.filter(result => result.success);
       const failedUpdates = response.results.filter(result => !result.success);
@@ -408,14 +408,14 @@ async addComment(postId, commentData) {
         RecordIds: [id]
       };
 
-      const response = await this.apperClient.deleteRecord('post', params);
+const response = await this.apperClient.deleteRecord('post', params);
 
-if (!response.success) {
+      if (!response.success) {
         console.error(response.message);
         return false;
       }
 
-if (response.results) {
+      if (response.results) {
         const successfulDeletions = response.results.filter(result => result.success);
         const failedDeletions = response.results.filter(result => !result.success);
 

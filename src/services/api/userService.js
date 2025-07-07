@@ -169,12 +169,12 @@ class UserService {
         }]
       };
 
-      const response = await this.apperClient.updateRecord('app_User', params);
+const response = await this.apperClient.updateRecord('app_User', params);
 
       if (!response.success) {
-console.error(response.message);
+        console.error(response.message);
         return null;
-}
+      }
 
       const successfulUpdates = response.results.filter(result => result.success);
       const failedUpdates = response.results.filter(result => !result.success);
