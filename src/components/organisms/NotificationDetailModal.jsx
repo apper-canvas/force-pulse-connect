@@ -62,7 +62,7 @@ const handleAction = () => {
     if (notification.type === 'follow') {
       navigate(`/profile/${notification.fromUserId}`);
     } else if (notification.postId) {
-      navigate('/');
+      navigate(`/?postId=${notification.postId}`);
     }
     onClose();
   };
