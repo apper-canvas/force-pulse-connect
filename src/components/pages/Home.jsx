@@ -81,31 +81,33 @@ useEffect(() => {
     }
   }, [location.search, navigate, location.pathname]);
 
-  const handleLike = async (postId) => {
+const handleLike = async (postId) => {
+    if (!currentUser?.id || !postId) return;
+    
     try {
       const isLiked = likedPosts.has(postId);
       
       if (isLiked) {
-        await postService.unlikePost(postId, currentUser.Id);
+        await postService.unlikePost(postId, currentUser.id);
         setLikedPosts(prev => {
           const newSet = new Set(prev);
           newSet.delete(postId);
           return newSet;
         });
       } else {
-        await postService.likePost(postId, currentUser.Id);
+        await postService.likePost(postId, currentUser.id);
         setLikedPosts(prev => new Set(prev).add(postId));
       }
 
-      // Update the post in the posts array
+// Update the post in the posts array
       setPosts(prevPosts => 
         prevPosts.map(post => 
-          post.Id === postId 
+          post.id === postId 
             ? {
                 ...post,
                 likes: isLiked 
-                  ? post.likes.filter(id => id !== currentUser.Id)
-                  : [...post.likes, currentUser.Id]
+                  ? (post.likes || []).filter(id => id !== currentUser.id)
+                  : [...(post.likes || []), currentUser.id]
               }
             : post
         )
@@ -116,7 +118,9 @@ useEffect(() => {
   };
 
 const handleComment = (postId) => {
-    const post = posts.find(p => p.Id === postId);
+    if (!postId) return;
+    
+    const post = posts.find(p => p.id === postId);
     if (post) {
       setSelectedPost(post);
       setIsCommentModalOpen(true);
@@ -124,10 +128,12 @@ const handleComment = (postId) => {
   };
 
   const handleCommentAdded = (postId) => {
+    if (!postId) return;
+    
     // Update the post's comment count in the posts array
     setPosts(prevPosts =>
       prevPosts.map(post =>
-        post.Id === postId
+        post.id === postId
           ? { ...post, comments: [...(post.comments || []), { id: Date.now() }] }
           : post
       )
@@ -149,8 +155,9 @@ const handleComment = (postId) => {
     }
   };
 
-  const getUserById = (userId) => {
-    return users.find(user => user.Id === userId);
+const getUserById = (userId) => {
+    if (!userId) return null;
+    return users.find(user => user.id === userId);
   };
 
   if (loading) {
@@ -188,16 +195,18 @@ return (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2">
-      <div className="space-y-4">
+<div className="space-y-4">
         {posts.map((post) => {
+          if (!post?.id) return null;
+          
           const user = getUserById(post.userId);
-          const isLiked = likedPosts.has(post.Id) || post.likes.includes(currentUser?.Id);
-          const isHighlighted = highlightedPostId === post.Id;
+          const isLiked = likedPosts.has(post.id) || (post.likes || []).includes(currentUser?.id);
+          const isHighlighted = highlightedPostId === post.id;
           
           return (
             <div
-              key={post.Id}
-              id={`post-${post.Id}`}
+              key={post.id}
+              id={`post-${post.id}`}
               className={`transition-all duration-300 ${
                 isHighlighted ? 'ring-2 ring-blue-500 ring-opacity-50 shadow-lg' : ''
               }`}
@@ -212,7 +221,7 @@ return (
               />
             </div>
           );
-})}
+        }).filter(Boolean)}
         </div>
         
 <CreatePostModal
