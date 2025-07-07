@@ -159,18 +159,16 @@ class PostService {
 if (!response.success) {
         console.error(response.message);
         return null;
+}
+
+      const successfulRecords = response.results.filter(result => result.success);
+      const failedRecords = response.results.filter(result => !result.success);
+
+      if (failedRecords.length > 0) {
+        console.error(`Failed to create ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
       }
 
-if (response.results) {
-        const successfulRecords = response.results.filter(result => result.success);
-        const failedRecords = response.results.filter(result => !result.success);
-
-        if (failedRecords.length > 0) {
-          console.error(`Failed to create ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
-        }
-
-        return successfulRecords.length > 0 ? successfulRecords[0].data : null;
-      }
+      return successfulRecords.length > 0 ? successfulRecords[0].data : null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error creating post:", error?.response?.data?.message);
@@ -207,18 +205,16 @@ if (response.results) {
 if (!response.success) {
         console.error(response.message);
         return null;
+}
+
+      const successfulUpdates = response.results.filter(result => result.success);
+      const failedUpdates = response.results.filter(result => !result.success);
+
+      if (failedUpdates.length > 0) {
+        console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
       }
 
-if (response.results) {
-        const successfulUpdates = response.results.filter(result => result.success);
-        const failedUpdates = response.results.filter(result => !result.success);
-
-        if (failedUpdates.length > 0) {
-          console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
-        }
-
-        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
-      }
+      return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error liking post:", error?.response?.data?.message);
@@ -251,18 +247,16 @@ if (response.results) {
 if (!response.success) {
         console.error(response.message);
         return null;
+}
+
+      const successfulUpdates = response.results.filter(result => result.success);
+      const failedUpdates = response.results.filter(result => !result.success);
+
+      if (failedUpdates.length > 0) {
+        console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
       }
 
-if (response.results) {
-        const successfulUpdates = response.results.filter(result => result.success);
-        const failedUpdates = response.results.filter(result => !result.success);
-
-        if (failedUpdates.length > 0) {
-          console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
-        }
-
-        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
-      }
+      return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error unliking post:", error?.response?.data?.message);

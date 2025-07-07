@@ -174,18 +174,16 @@ class UserService {
       if (!response.success) {
 console.error(response.message);
         return null;
+}
+
+      const successfulUpdates = response.results.filter(result => result.success);
+      const failedUpdates = response.results.filter(result => !result.success);
+
+      if (failedUpdates.length > 0) {
+        console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
       }
 
-if (response.results) {
-        const successfulUpdates = response.results.filter(result => result.success);
-        const failedUpdates = response.results.filter(result => !result.success);
-
-        if (failedUpdates.length > 0) {
-          console.error(`Failed to update ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
-        }
-
-        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
-      }
+      return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error updating profile:", error?.response?.data?.message);
