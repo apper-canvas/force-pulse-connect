@@ -410,12 +410,12 @@ async delete(id) {
 
       const response = await this.apperClient.deleteRecord('post', params);
 
-      if (!response.success) {
+if (!response.success) {
         console.error(response.message);
         return false;
       }
 
-if (response.results) {
+      if (response.results) {
         const successfulDeletions = response.results.filter(result => result.success);
         const failedDeletions = response.results.filter(result => !result.success);
 
