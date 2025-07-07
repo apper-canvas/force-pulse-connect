@@ -176,7 +176,7 @@ class UserService {
         return null;
       }
 
-      if (response.results) {
+if (response.results) {
         const successfulUpdates = response.results.filter(result => result.success);
         const failedUpdates = response.results.filter(result => !result.success);
 
@@ -186,8 +186,6 @@ class UserService {
 
         return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
       }
-
-      return null;
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error updating profile:", error?.response?.data?.message);
